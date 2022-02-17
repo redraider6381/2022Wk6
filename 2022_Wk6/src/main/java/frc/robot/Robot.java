@@ -7,6 +7,7 @@ package frc.robot;
 import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -44,6 +45,7 @@ public class Robot extends TimedRobot {
     Components.Indexer2.setInverted(true);
     // Components.CANBackLeft.setInverted(true);
     // Components.CANFrontLeft.setInverted(true);
+    Components.compressor.enableDigital();
   }
 
   /**
@@ -162,6 +164,24 @@ public class Robot extends TimedRobot {
       drivePower = 0.125;
     }
 
+    if((Components.happyStick.getRawButton(2)))//When it is pulled back, the intake starts
+    {
+        Components.intakeMotor.set(-1);
+    }
+    else  
+    {
+        Components.intakeMotor.set(0);
+    } 
+    
+
+  if(Components.happyStick.getRawButton(7)){
+    Components.intakePneumatic.set(Value.kReverse);
+    System.out.println("Reverse. Beep. Beep. Beep.");
+  }
+  if(Components.happyStick.getRawButton(8)){
+    Components.intakePneumatic.set(Value.kForward);
+    System.out.println("Here I go! Forward.");
+  }
   }
   private static void setDriveForMecanum(Mecanum.Motion motion) {
     Mecanum.Wheels wheels = Mecanum.motionToWheels(motion);
@@ -174,6 +194,7 @@ public class Robot extends TimedRobot {
     Components.CANFrontRight.set(-wheels.frontRight*drivePower);
     Components.CANBackLeft.set(wheels.backLeft*drivePower);
     Components.CANBackRight.set(-wheels.backRight*drivePower);
+     
    
 }
 
@@ -192,4 +213,5 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
 }
