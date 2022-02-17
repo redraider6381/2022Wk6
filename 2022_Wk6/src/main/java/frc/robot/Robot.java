@@ -23,8 +23,8 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 
-  public static double drivePower = 0.0625;
-  public static double Power = 0.0625;
+  public static double drivePower = 0.125;
+  public static double Power = 0.125;
 
   double leftYAxis;
   double rightYAxis;
@@ -41,6 +41,9 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     // SuperSecretFunction();
+    Components.Indexer2.setInverted(true);
+    // Components.CANBackLeft.setInverted(true);
+    // Components.CANFrontLeft.setInverted(true);
   }
 
   /**
@@ -68,9 +71,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    // Components.Indexer2.setInverted(true);
-    Components.CANFrontLeft.setInverted(true);
-    Components.CANBackLeft.setInverted(true);
+    
 
   }
 
@@ -96,12 +97,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if(Components.XBController.getRawAxis(2)>0.1)
+    if(Math.abs(Components.XBController.getRawAxis(2))>0.1)
     {
     Components.Indexer2.set(Components.XBController.getRawAxis(2)*Power);
     Components.Indexer1.set(Components.XBController.getRawAxis(2)*Power);
     }
-    else if(Components.XBController.getRawAxis(3)>0.1)
+    else if(Math.abs(Components.XBController.getRawAxis(3))>0.1)
     {
     Components.Indexer2.set(-Components.XBController.getRawAxis(3)*Power);
     Components.Indexer1.set(-Components.XBController.getRawAxis(3)*Power);
@@ -112,34 +113,34 @@ public class Robot extends TimedRobot {
     Components.Indexer1.set(0);
     }
 
-    // if(Components.XBController.getRawAxis(1)>0.075)
+    // if(Math.abs(Components.XBController.getRawAxis(1))>0.075)
     // {
-    // leftYAxis = Components.XBController.getRawAxis(1);
+    // leftYAxis = -Components.XBController.getRawAxis(1);
     // }
     // else
     // {
     //   leftYAxis = 0;
     // }
 
-    // if(Components.XBController.getRawAxis(0)>0.075)
+    // if(Math.abs(Components.XBController.getRawAxis(0))>0.075)
     // {
     //   leftXAxis = Components.XBController.getRawAxis(0);
     // }
     // else
     // {
-    //   leftYAxis = 0;x
+    //   leftYAxis = 0;
     // }
-    // if(Components.XBController.getRawAxis(4)>0.075)
+    // if(Math.abs(Components.XBController.getRawAxis(4))>0.075)
     // {
     //   rightXAxis = Components.XBController.getRawAxis(4);
-    // }
+    // } 
     // else
     // {
     //   rightXAxis = 0;
     // }
     
-    leftYAxis = Components.XBController.getRawAxis(1);
-    rightYAxis = Components.XBController.getRawAxis(5);
+    leftYAxis = -Components.XBController.getRawAxis(1);
+    rightYAxis = -Components.XBController.getRawAxis(5);
     leftXAxis = Components.XBController.getRawAxis(0);
     rightXAxis = Components.XBController.getRawAxis(4);
     setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis,leftYAxis,rightXAxis,rightYAxis));
@@ -158,7 +159,7 @@ public class Robot extends TimedRobot {
     }
     else
     {
-      drivePower = 0.0625;
+      drivePower = 0.125;
     }
 
   }
@@ -170,9 +171,9 @@ public class Robot extends TimedRobot {
     robot.BL.setPower(Range.clip(Math.abs(wheels.backLeft*DrivePower*(runtime.seconds()/0.75)), -1.0, 1.0));
     robot.BR.setPower(Range.clip(Math.abs(wheels.backRight*DrivePower*(runtime.seconds()/0.75)), -1.0, 1.0));*/
     Components.CANFrontLeft.set(wheels.frontLeft*drivePower);
-    Components.CANFrontRight.set(wheels.frontRight*drivePower);
+    Components.CANFrontRight.set(-wheels.frontRight*drivePower);
     Components.CANBackLeft.set(wheels.backLeft*drivePower);
-    Components.CANBackRight.set(wheels.backRight*drivePower);
+    Components.CANBackRight.set(-wheels.backRight*drivePower);
    
 }
 

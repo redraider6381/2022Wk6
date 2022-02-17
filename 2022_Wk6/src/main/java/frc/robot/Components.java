@@ -14,5 +14,6 @@ public class Components {
 
     public static CANSparkMax Indexer1    = new CANSparkMax(5, MotorType.kBrushless);
     public static CANSparkMax Indexer2   = new CANSparkMax(13, MotorType.kBrushless);
+    
 
 }
