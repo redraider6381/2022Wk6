@@ -46,8 +46,8 @@ public class Robot extends TimedRobot {
     // Components.CANBackLeft.setInverted(true);
     // Components.CANFrontLeft.setInverted(true);
     // Components.compressor.enableDigital();
-    Components.HoodServo.setPosition(0.5);
-    Components.HoodServo2.setPosition(0.5);
+    // Components.HoodServo.setPosition(0.5);
+    // Components.HoodServo2.setPosition(0.5);
   }
 
   /**
@@ -154,6 +154,31 @@ public class Robot extends TimedRobot {
     boolean L = Components.XBController.getLeftBumper();
     boolean R = Components.XBController.getRightBumper();
     
+    //  if (Components.happyStick.getRawAxis(1)<-0.1)
+    //   {
+    //     Components.CANShooter.set(Components.happyStick.getRawAxis(1));
+    //     Components.CANShooter2.set(Components.happyStick.getRawAxis(1));
+    //   }
+      
+    //   else
+    //   {
+    //     Components.CANShooter.set(0);
+    //     Components.CANShooter2.set(0);
+    //   }
+
+
+
+    //   if (Components.happyStick.getRawButton(1))
+    //   {
+    //     Components.LeftUptake.set(1);
+    //     Components.RightUptake.set(1);
+    //   }
+    //   else
+    //   {
+    //     Components.LeftUptake.set(0);
+    //     Components.RightUptake.set(0);
+      // }
+      
     
     if(L&&R)
     {

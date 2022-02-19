@@ -21,6 +21,10 @@ public class Components {
     public static CANSparkMax Indexer2   = new CANSparkMax(13, MotorType.kBrushless);
     public static Joystick happyStick = new Joystick(1);
     public static CANSparkMax intakeMotor = new CANSparkMax(7, MotorType.kBrushless);
-    public static Servo HoodServo  = new Servo(0);
-    public static Servo HoodServo2  = new Servo(1);
+    // public static Servo HoodServo  = new Servo(0);
+    // public static Servo HoodServo2  = new Servo(1);
+    // public static CANSparkMax CANShooter = new CANSparkMax(5, MotorType.kBrushless);
+    // public static CANSparkMax CANShooter2 = new CANSparkMax(6, MotorType.kBrushless);
+    // public static CANSparkMax LeftUptake = new CANSparkMax(8, MotorType.kBrushless);
+    // public static CANSparkMax RightUptake = new CANSparkMax(9, MotorType.kBrushless);
 }
