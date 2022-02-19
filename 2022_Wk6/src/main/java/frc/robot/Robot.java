@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
   double rightYAxis;
   double leftXAxis;
   double rightXAxis;
+  int caseNumber = 1;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -42,10 +43,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     // SuperSecretFunction();
-    Components.Indexer2.setInverted(true);
-    // Components.CANBackLeft.setInverted(true);
-    // Components.CANFrontLeft.setInverted(true);
     // Components.compressor.enableDigital();
+
+    //Inveting Stuff:
+    Components.Indexer2.setInverted(true);
+    Components.CANBackRight.setInverted(true);
+    Components.CANFrontRight.setInverted(true);
+    
+    //Initial Pos:
     // Components.HoodServo.setPosition(0.5);
     // Components.HoodServo2.setPosition(0.5);
   }
@@ -85,7 +90,24 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
-        break;
+        switch (caseNumber) {
+        case 1:
+          // Move back a bit to help the pneumatics
+          // intakePneumatic1.set(Value.kReverse);
+          // intakePneumatic2.set(Value.kReverse);
+          caseNumber++;
+          break;
+        case 2:
+        double startToBall = 5;
+        // Autonomous.forward(startToBall);
+          caseNumber++;
+          break;
+        case 3:
+        Autonomous.processSecondBall();
+          caseNumber++;
+          break;
+      }
+      break;
       case kDefaultAuto:
       default:
         // Put default auto code here
@@ -117,6 +139,9 @@ public class Robot extends TimedRobot {
     Components.Indexer1.set(0);
     }
 
+
+    
+
     // if(Math.abs(Components.XBController.getRawAxis(1))>0.075)
     // {
     // leftYAxis = -Components.XBController.getRawAxis(1);
@@ -147,6 +172,7 @@ public class Robot extends TimedRobot {
     rightYAxis = -Components.XBController.getRawAxis(5);
     leftXAxis = Components.XBController.getRawAxis(0);
     rightXAxis = Components.XBController.getRawAxis(4);
+    //Hood Controls
     // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
     // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
     setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis,leftYAxis,rightXAxis,rightYAxis));
@@ -154,6 +180,7 @@ public class Robot extends TimedRobot {
     boolean L = Components.XBController.getLeftBumper();
     boolean R = Components.XBController.getRightBumper();
     
+    //Shooter Code:
     //  if (Components.happyStick.getRawAxis(1)<-0.1)
     //   {
     //     Components.CANShooter.set(Components.happyStick.getRawAxis(1));
@@ -167,7 +194,7 @@ public class Robot extends TimedRobot {
     //   }
 
 
-
+//Uptake Code:
     //   if (Components.happyStick.getRawButton(1))
     //   {
     //     Components.LeftUptake.set(1);
@@ -193,7 +220,7 @@ public class Robot extends TimedRobot {
       drivePower = 0.125;
     }
 
-    if((Components.happyStick.getRawButton(2)))//When it is pulled back, the intake starts
+    if((Components.happyStick.getRawButton(2)))
     {
         Components.intakeMotor.set(-1);
     }
