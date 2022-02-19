@@ -46,7 +46,9 @@ public class Robot extends TimedRobot {
     Components.Indexer2.setInverted(true);
     // Components.CANBackLeft.setInverted(true);
     // Components.CANFrontLeft.setInverted(true);
-    Components.compressor.enableDigital();
+    // Components.compressor.enableDigital();
+    // Components.intakePneumatic.set(Value.kForward);
+ 
   }
 
   /**
@@ -162,7 +164,7 @@ int caseNumber = 1;
     
     leftYAxis = -Components.XBController.getRawAxis(1);
     rightYAxis = -Components.XBController.getRawAxis(5);
-    leftXAxis = Components.XBController.getRawAxis(0);
+    leftXAxis = -Components.XBController.getRawAxis(0);
     rightXAxis = Components.XBController.getRawAxis(4);
     setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis,leftYAxis,rightXAxis,rightYAxis));
 
@@ -183,6 +185,7 @@ int caseNumber = 1;
       drivePower = 0.125;
     }
 
+
     if((Components.happyStick.getRawButton(2)))//When it is pulled back, the intake starts
     {
         Components.intakeMotor.set(-1);
@@ -191,15 +194,14 @@ int caseNumber = 1;
     {
         Components.intakeMotor.set(0);
     } 
-    
 
   if(Components.happyStick.getRawButton(7)){
-    Components.intakePneumatic.set(Value.kReverse);
     System.out.println("Reverse. Beep. Beep. Beep.");
+    Components.intakePneumatic.set(Value.kReverse);
   }
   if(Components.happyStick.getRawButton(8)){
-    Components.intakePneumatic.set(Value.kForward);
     System.out.println("Here I go! Forward.");
+    Components.intakePneumatic.set(Value.kForward);
   }
   }
   private static void setDriveForMecanum(Mecanum.Motion motion) {
