@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -47,8 +46,8 @@ public class Robot extends TimedRobot {
     // Components.CANBackLeft.setInverted(true);
     // Components.CANFrontLeft.setInverted(true);
     // Components.compressor.enableDigital();
-    // Components.intakePneumatic.set(Value.kForward);
- 
+    Components.HoodServo.setPosition(0.5);
+    Components.HoodServo2.setPosition(0.5);
   }
 
   /**
@@ -79,32 +78,14 @@ public class Robot extends TimedRobot {
     
 
   }
-int caseNumber = 1;
+
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      
       case kCustomAuto:
         // Put custom auto code here
-        switch (caseNumber) {
-        case 1:
-          // Move back a bit to help the pneumatics
-          // intakePneumatic1.set(Value.kReverse);
-          // intakePneumatic2.set(Value.kReverse);
-          caseNumber++;
-          break;
-        case 2:
-        double startToBall = 5;
-        Autonomous.forward(startToBall);
-          caseNumber++;
-          break;
-        case 3:
-        Autonomous.processSecondBall();
-          caseNumber++;
-          break;
-      }
-      break;
+        break;
       case kDefaultAuto:
       default:
         // Put default auto code here
@@ -164,8 +145,10 @@ int caseNumber = 1;
     
     leftYAxis = -Components.XBController.getRawAxis(1);
     rightYAxis = -Components.XBController.getRawAxis(5);
-    leftXAxis = -Components.XBController.getRawAxis(0);
+    leftXAxis = Components.XBController.getRawAxis(0);
     rightXAxis = Components.XBController.getRawAxis(4);
+    // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
+    // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
     setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis,leftYAxis,rightXAxis,rightYAxis));
 
     boolean L = Components.XBController.getLeftBumper();
@@ -185,7 +168,6 @@ int caseNumber = 1;
       drivePower = 0.125;
     }
 
-
     if((Components.happyStick.getRawButton(2)))//When it is pulled back, the intake starts
     {
         Components.intakeMotor.set(-1);
@@ -194,14 +176,15 @@ int caseNumber = 1;
     {
         Components.intakeMotor.set(0);
     } 
+    
 
   if(Components.happyStick.getRawButton(7)){
-    System.out.println("Reverse. Beep. Beep. Beep.");
     Components.intakePneumatic.set(Value.kReverse);
+    System.out.println("Reverse. Beep. Beep. Beep.");
   }
   if(Components.happyStick.getRawButton(8)){
-    System.out.println("Here I go! Forward.");
     Components.intakePneumatic.set(Value.kForward);
+    System.out.println("Here I go! Forward.");
   }
   }
   private static void setDriveForMecanum(Mecanum.Motion motion) {
