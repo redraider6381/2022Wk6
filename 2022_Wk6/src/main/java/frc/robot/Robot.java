@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -76,14 +77,32 @@ public class Robot extends TimedRobot {
     
 
   }
-
+int caseNumber = 1;
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
+      
       case kCustomAuto:
         // Put custom auto code here
-        break;
+        switch (caseNumber) {
+        case 1:
+          // Move back a bit to help the pneumatics
+          // intakePneumatic1.set(Value.kReverse);
+          // intakePneumatic2.set(Value.kReverse);
+          caseNumber++;
+          break;
+        case 2:
+        double startToBall = 5;
+        Autonomous.forward(startToBall);
+          caseNumber++;
+          break;
+        case 3:
+        Autonomous.processSecondBall();
+          caseNumber++;
+          break;
+      }
+      break;
       case kDefaultAuto:
       default:
         // Put default auto code here
