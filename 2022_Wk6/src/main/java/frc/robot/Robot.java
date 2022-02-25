@@ -7,9 +7,11 @@ package frc.robot;
 import javax.lang.model.util.ElementScanner6;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.revrobotics.CANSparkMax;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,21 +19,52 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
+
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-
-  public static double drivePower = 0.125;
-  public static double Power = 0.125;
+//Teleop Variables
+  public static double drivePower = 0.25;
+  public static double indexerPower = 0.375;
+  public static double ShootingPower = 0.375;
+  public static double uptakeSpeed = -0.5;
 
   double leftYAxis;
   double rightYAxis;
   double leftXAxis;
   double rightXAxis;
   int caseNumber = 1;
+  
+  Timer timer = new Timer();
+
+
+  int AutoStep = 0;
+
+  //Auto Variables
+  public double driveSpeed = 0.25;
+  public double turnSpeed = 0.25;
+  public double FlywheelSpeed = 0.75;
+  public double IntakeSpeed = 0.75;
+  public double distance = 40;
+  //turns to the right
+  public double turnamount = 0;
+  public double intaketime = 5;
+  public double flwheeltime = 4;
+
+
+    //Auto 2 Variables
+    public double driveSpeed2 = 0.125;
+    public double turnSpeed2 = 0.125;
+    public double FlywheelSpeed2 = 0.375;
+    public double IntakeSpeed2 = 0.375;
+    public double distance2 = 40;
+    //turns to the right
+    public double turnamount2 = 0;
+    public double intaketime2 = 5;
+    public double flwheeltime2 = 3; 
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -39,16 +72,30 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    Components.CANBackLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    Components.CANFrontLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    Components.CANBackRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    Components.CANFrontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    // SuperSecretFunction();
-    // Components.compressor.enableDigital();
 
-    //Inveting Stuff:
+    // limitSwitch = new DigitalInput(1);
+    Components.CANFrontLeft.setInverted(true);
+    Components.CANBackLeft.setInverted(true);
+    Components.CANShooter2.setInverted(true);
     Components.Indexer2.setInverted(true);
-    Components.CANBackRight.setInverted(true);
-    Components.CANFrontRight.setInverted(true);
+    Components.CANBackLeft.set(0);
+    Components.CANBackRight.set(0);
+    Components.CANFrontLeft.set(0);
+    Components.CANFrontRight.set(0);
+    Components.BL.setPosition(0);
+    Components.BL.setPositionConversionFactor(0.1);
+
+    // Components.intakePneumatic.set(Value.kReverse);
+    Components.intakePneumatic.set(Value.kForward); //Out
     
     //Initial Pos:
     // Components.HoodServo.setPosition(0.5);
@@ -77,42 +124,233 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    AutoStep = 0;
     m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    
+    Components.BL.setPosition(0);
+    timer.reset();
+    timer.start();
 
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
+    switch (m_autoSelected) 
+    {
+      case kCustomAuto: //Start of Auto 1:
         // Put custom auto code here
-        switch (caseNumber) {
-        case 1:
-          // Move back a bit to help the pneumatics
-          // intakePneumatic1.set(Value.kReverse);
-          // intakePneumatic2.set(Value.kReverse);
-          caseNumber++;
+
+
+        //No turning Code:
+        switch (AutoStep)
+        {
+          case 0:
+          timer.reset();
+          timer.start();
+          AutoStep++;
+        break;
+          case 1:
+        Components.CANBackLeft.set(0);
+        Components.CANBackRight.set(0);
+        Components.CANFrontLeft.set(0);
+        Components.CANFrontRight.set(0);
+        System.out.println("Flywheel running for this many seconds: " + timer.get());
+          Components.CANShooter1.set(FlywheelSpeed);
+          Components.CANShooter2.set(FlywheelSpeed);
+        if(timer.get() > flwheeltime){
+          Components.Uptake.set(uptakeSpeed);
+          Components.Uptake.set(uptakeSpeed);
+          AutoStep++;
+
+          }
           break;
         case 2:
-        double startToBall = 5;
-        // Autonomous.forward(startToBall);
-          caseNumber++;
-          break;
+        //Run Intake too  
+        Components.CANShooter1.set(0);
+          Components.CANShooter2.set(0);
+          Components.Uptake.set(0);
+          Components.Uptake.set(0);
+        Components.intakeMotor.set(1);
+        Components.intakeMotor.set(1);
+        Components.Indexer1.set(1);
+        Components.Indexer2.set(1);
+
+        
+        System.out.println("Driving Forward, step 1, Postion: " + Components.BL.getPosition());
+        Components.CANBackLeft.set(driveSpeed);
+        Components.CANBackRight.set(driveSpeed);
+        Components.CANFrontLeft.set(driveSpeed);
+        Components.CANFrontRight.set(driveSpeed);
+        //}
+        if (Components.BL.getPosition()>distance)
+        {
+        Components.CANBackLeft.set(0);
+        Components.CANBackRight.set(0);
+        Components.CANFrontLeft.set(0);
+        Components.CANFrontRight.set(0);
+        Components.BL.setPosition(0);
+        System.out.println("Done with moving");
+        AutoStep++;
+        timer.reset();
+        timer.start();
+        }
+        break;
         case 3:
-        Autonomous.processSecondBall();
-          caseNumber++;
-          break;
+        Components.CANBackLeft.set(0);
+        Components.CANBackRight.set(0);
+        Components.CANFrontLeft.set(0);
+        Components.CANFrontRight.set(0);
+        System.out.println("Indexer and Intake!"+timer.get());
+          //run intake and indexer here
+          Components.Indexer1.set(IntakeSpeed);
+          Components.Indexer2.set(IntakeSpeed);
+          Components.intakeMotor.set(1);
+          Components.intakeMotor.set(1);
+        if(timer.get() > intaketime)
+        {
+          System.out.println("Done with Intaking!");
+          Components.BL.setPosition(0);
+          timer.reset();
+          timer.start();
+          AutoStep =2;
+        }
+        break;
+        case 4:
+        //turns to the right
+        Components.CANBackLeft.set(turnSpeed);
+        Components.CANBackRight.set(-turnSpeed);
+        Components.CANFrontLeft.set(turnSpeed);
+        Components.CANFrontRight.set(-turnSpeed);
+        System.out.println("Turning a little: " + Components.BL.getPosition());
+  
+        if(Components.BL.getPosition() >= turnamount){
+          Components.CANBackLeft.set(0);
+        Components.CANBackRight.set(0);
+        Components.CANFrontLeft.set(0);
+        Components.CANFrontRight.set(0);
+          timer.reset();
+          timer.start();
+          AutoStep++;
+          }
+        break;
+        
+          case 5:
+          Components.CANBackLeft.set(0);
+          Components.CANBackRight.set(0);
+          Components.CANFrontLeft.set(0);
+          Components.CANFrontRight.set(0);
+          System.out.println("keep it all running until the end " + timer.get());
+
+        break;
       }
       break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+
+  // This would be the start of a second Auto Option:
+  case kDefaultAuto:
+
+  //No turning Code:
+  switch (AutoStep)
+  {
+      case 0:
+      timer.reset();
+      timer.start();
+      AutoStep++;
+  case 1:
+  //Run Intake too  
+  // Components.intakeMotor.set(1);
+  // Components.intakeMotor.set(1);
+  // Components.indexer1.set(1);
+  // Components.indexer2.set(1);
+
+  System.out.println("Driving Forward, step 1, Postion: " + timer.get());
+  Components.CANBackLeft.set(driveSpeed2);
+  Components.CANBackRight.set(driveSpeed2);
+  Components.CANFrontLeft.set(driveSpeed2);
+  Components.CANFrontRight.set(driveSpeed2);
+  //}
+  if (timer.get()>2)
+  {
+  Components.CANBackLeft.set(0);
+  Components.CANBackRight.set(0);
+  Components.CANFrontLeft.set(0);
+  Components.CANFrontRight.set(0);
+  Components.BL.setPosition(0);
+  System.out.println("Done with moving");
+  timer.reset();
+  timer.start();
+  AutoStep++;
+  }
+  break;
+  case 2:
+  Components.CANBackLeft.set(0);
+  Components.CANBackRight.set(0);
+  Components.CANFrontLeft.set(0);
+  Components.CANFrontRight.set(0);
+  break;
+  // System.out.println("Indexer and Intake!"+timer.get());
+  //   //run intake and indexer here
+  //   // Components.Indexer1.set(IntakeSpeed);
+  //   // Components.Indexer2.set(IntakeSpeed);
+  //   // Components.intakeMotor.set(1);
+  //   // Components.intakeMotor.set(1);
+  // if(timer.get() > intaketime2)
+  // {
+  //   System.out.println("Done with Intaking!");
+  //   // Components.CANShooter1.set(FlywheelSpeed);
+  //   // Components.CANShooter2.set(FlywheelSpeed);
+  //   Components.BL.setPosition(0);
+  //   timer.reset();
+  //   timer.start();
+  //   AutoStep =2;
+  // }
+  // break;
+  // case 2:
+  // //turns to the right
+  // Components.CANBackLeft.set(turnSpeed2);
+  // Components.CANBackRight.set(-turnSpeed2);
+  // Components.CANFrontLeft.set(turnSpeed2);
+  // Components.CANFrontRight.set(-turnSpeed2);
+  // System.out.println("Turning a little: " + Components.BL.getPosition());
+  //   // Components.CANShooter1.set(FlywheelSpeed);
+  //   // Components.CANShooter2.set(FlywheelSpeed);
+  // if(Components.BL.getPosition() >= turnamount2){
+  //   Components.CANBackLeft.set(0);
+  // Components.CANBackRight.set(0);
+  // Components.CANFrontLeft.set(0);
+  // Components.CANFrontRight.set(0);
+  //   timer.reset();
+  //   timer.start();
+  //   AutoStep++;
+  //   }
+  // break;
+  // case 3:
+  // Components.CANBackLeft.set(0);
+  // Components.CANBackRight.set(0);
+  // Components.CANFrontLeft.set(0);
+  // Components.CANFrontRight.set(0);
+  // System.out.println("Flywheel running for this many seconds: " + timer.get());
+  //   // Components.CANShooter1.set(FlywheelSpeed);
+  //   // Components.CANShooter2.set(FlywheelSpeed);
+  // if(timer.get() > FlywheelSpeed2){
+  //   // Components.LeftUptake.set(uptakeSpeed);
+  //   // Components.RightUptake.set(uptakeSpeed);
+  //   AutoStep++;
+
+  //   }
+  //   break;
+  //   case 4:
+  //   Components.CANBackLeft.set(0);
+  //   Components.CANBackRight.set(0);
+  //   Components.CANFrontLeft.set(0);
+  //   Components.CANFrontRight.set(0);
+  //   System.out.println("keep it all running until the end " + timer.get());
+
+ // break;
+}
+break;
+  }
   }
 
   /** This function is called once when teleop is enabled. */
@@ -125,21 +363,19 @@ public class Robot extends TimedRobot {
 
     if(Math.abs(Components.XBController.getRawAxis(2))>0.1)
     {
-    Components.Indexer2.set(Components.XBController.getRawAxis(2)*Power);
-    Components.Indexer1.set(Components.XBController.getRawAxis(2)*Power);
+    Components.Indexer2.set(Components.XBController.getRawAxis(2)*indexerPower);
+    Components.Indexer1.set(Components.XBController.getRawAxis(2)*indexerPower);
     }
     else if(Math.abs(Components.XBController.getRawAxis(3))>0.1)
     {
-    Components.Indexer2.set(-Components.XBController.getRawAxis(3)*Power);
-    Components.Indexer1.set(-Components.XBController.getRawAxis(3)*Power);
+    Components.Indexer2.set(-Components.XBController.getRawAxis(3)*indexerPower);
+    Components.Indexer1.set(-Components.XBController.getRawAxis(3)*indexerPower);
     }
     else
     {
     Components.Indexer2.set(0);
     Components.Indexer1.set(0);
     }
-
-
     
 
     // if(Math.abs(Components.XBController.getRawAxis(1))>0.075)
@@ -171,7 +407,7 @@ public class Robot extends TimedRobot {
     leftYAxis = -Components.XBController.getRawAxis(1);
     rightYAxis = -Components.XBController.getRawAxis(5);
     leftXAxis = Components.XBController.getRawAxis(0);
-    rightXAxis = Components.XBController.getRawAxis(4);
+    rightXAxis = -Components.XBController.getRawAxis(4);
     //Hood Controls
     // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
     // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
@@ -181,30 +417,59 @@ public class Robot extends TimedRobot {
     boolean R = Components.XBController.getRightBumper();
     
     //Shooter Code:
-    //  if (Components.happyStick.getRawAxis(1)<-0.1)
-    //   {
-    //     Components.CANShooter.set(Components.happyStick.getRawAxis(1));
-    //     Components.CANShooter2.set(Components.happyStick.getRawAxis(1));
-    //   }
+    if (Components.happyStick.getRawAxis(1)>0.1)
+      {
+         //fowards intake and indexer
+        Components.intakeMotor.set(-1);
+        Components.Indexer2.set(-indexerPower);
+        Components.Indexer1.set(-indexerPower);
+
+      } 
+    else if (Components.happyStick.getRawAxis(1)<-0.1)
+      {
+        //Backwards intake
+        // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
+        // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
+        Components.intakeMotor.set(1);
+        // Components.Indexer2.set(-indexerPower);
+        // Components.Indexer1.set(-indexerPower);
+        if(Components.happyStick.getRawButton(3))
+      {
+        //Backwards indexer
+        Components.Indexer2.set(indexerPower);
+        Components.Indexer1.set(indexerPower);
+      }
+      else
+      {
+        //otherwise indexer stays how it is
+        Components.Indexer2.set(0);
+        Components.Indexer1.set(0);
+      }
+
+      }
       
-    //   else
-    //   {
-    //     Components.CANShooter.set(0);
-    //     Components.CANShooter2.set(0);
-    //   }
+      else
+      {
+        // Components.CANShooter1.set(0);
+        // Components.CANShooter2.set(0);
+        Components.intakeMotor.set(0);
+      }
 
 
-//Uptake Code:
-    //   if (Components.happyStick.getRawButton(1))
-    //   {
-    //     Components.LeftUptake.set(1);
-    //     Components.RightUptake.set(1);
-    //   }
-    //   else
-    //   {
-    //     Components.LeftUptake.set(0);
-    //     Components.RightUptake.set(0);
-      // }
+    //Uptake Code:
+      if (Components.happyStick.getRawButton(1))
+      {
+        System.out.println("Shooting!!!");
+        Components.CANShooter1.set(ShootingPower);
+        Components.CANShooter2.set(ShootingPower);
+        // Components.Uptake.set(uptakeSpeed);
+      }
+      else
+      {
+        Components.CANShooter1.set(0);
+        Components.CANShooter2.set(0);
+        // Components.Uptake.set(0);
+      }
       
     
     if(L&&R)
@@ -217,26 +482,35 @@ public class Robot extends TimedRobot {
     }
     else
     {
-      drivePower = 0.125;
+      drivePower = 0.25;
     }
 
     if((Components.happyStick.getRawButton(2)))
     {
-        Components.intakeMotor.set(-1);
+
+        // Components.intakeMotor.set(-1);
+        Components.Uptake.set(uptakeSpeed);
     }
-    else  
+    else
     {
-        Components.intakeMotor.set(0);
-    } 
-    
+      Components.Uptake.set(0);
+    }
+    // else  
+    // {
+    //     Components.intakeMotor.set(0);
+    // } 
+    if(Components.happyStick.getRawButton(6)){
+      System.out.println("Should be off");
+      Components.intakePneumatic.set(Value.kOff);
+    }
 
   if(Components.happyStick.getRawButton(7)){
+    System.out.println("Should be in");
     Components.intakePneumatic.set(Value.kReverse);
-    System.out.println("Reverse. Beep. Beep. Beep.");
   }
   if(Components.happyStick.getRawButton(8)){
+    System.out.println("Should be out");
     Components.intakePneumatic.set(Value.kForward);
-    System.out.println("Here I go! Forward.");
   }
   }
   private static void setDriveForMecanum(Mecanum.Motion motion) {
@@ -247,9 +521,9 @@ public class Robot extends TimedRobot {
     robot.BL.setPower(Range.clip(Math.abs(wheels.backLeft*DrivePower*(runtime.seconds()/0.75)), -1.0, 1.0));
     robot.BR.setPower(Range.clip(Math.abs(wheels.backRight*DrivePower*(runtime.seconds()/0.75)), -1.0, 1.0));*/
     Components.CANFrontLeft.set(wheels.frontLeft*drivePower);
-    Components.CANFrontRight.set(-wheels.frontRight*drivePower);
+    Components.CANFrontRight.set(wheels.frontRight*drivePower);
     Components.CANBackLeft.set(wheels.backLeft*drivePower);
-    Components.CANBackRight.set(-wheels.backRight*drivePower);
+    Components.CANBackRight.set(wheels.backRight*drivePower);
      
    
 }
