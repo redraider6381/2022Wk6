@@ -9,6 +9,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
+
+
 
 public class Components {
     public static CANSparkMax CANBackLeft     = new CANSparkMax(1, MotorType.kBrushless);
@@ -36,8 +44,27 @@ public class Components {
     //Flywheels:
     public static CANSparkMax CANShooter1 = new CANSparkMax(11, MotorType.kBrushless);
     public static CANSparkMax CANShooter2 = new CANSparkMax(2, MotorType.kBrushless);
+
+
+
+
+    // Creates UsbCamera and MjpegServer [1] and connects them
+    static UsbCamera usbCamera = new UsbCamera("USB Camera 0", 0);
+    static MjpegServer mjpegServer1 = new MjpegServer("serve_USB Camera 0", 1181);
+
+// Creates the CvSink and connects it to the UsbCamera
+static CvSink cvSink = new CvSink("opencv_USB Camera 0");
+
+// Creates the CvSource and MjpegServer [2] and connects them
+static CvSource outputStream = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
+static MjpegServer mjpegServer2 = new MjpegServer("serve_Blur", 1182);
+
+
+
+
+
     //Uptake:
-    // public static CANSparkMax RightUptake = new CANSparkMax(9, MotorType.kBrushless);
+    public static CANSparkMax RightUptake = new CANSparkMax(9, MotorType.kBrushless);
 
 
     // encoders
