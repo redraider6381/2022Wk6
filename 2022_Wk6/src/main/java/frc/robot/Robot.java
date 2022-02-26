@@ -497,7 +497,7 @@ break;
     }
     // else  
     // {
-    //     Components.intakeMotor.set(0);
+    //     Component.intakeMotor.set(0);
     // } 
     if(Components.happyStick.getRawButton(6)){
       System.out.println("Should be off");
