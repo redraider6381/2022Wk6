@@ -1,14 +1,15 @@
 package frc.robot;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Servo;
-<<<<<<< HEAD
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
@@ -17,9 +18,6 @@ import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
 
 
-=======
-import edu.wpi.first.wpilibj.Ultrasonic;                                       
->>>>>>> 021089928c071ba43c9dc4afe61007e40bb5e255
 
 public class Components {
     public static CANSparkMax CANBackLeft     = new CANSparkMax(1, MotorType.kBrushless);
@@ -33,7 +31,6 @@ public class Components {
     public static CANSparkMax Indexer2   = new CANSparkMax(13, MotorType.kBrushless);
     public static Joystick happyStick = new Joystick(1);
     public static CANSparkMax intakeMotor = new CANSparkMax(7, MotorType.kBrushless);
-<<<<<<< HEAD
 
     //Indexers:
     // public static Servo HoodServo  = new Servo(0);
@@ -60,6 +57,7 @@ static CvSource outputStream = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480
 static MjpegServer mjpegServer2 = new MjpegServer("serve_Blur", 1182);
 
 
+public static AnalogPotentiometer ultrasonic = new AnalogPotentiometer(0, 1, 0);
 
 
 
@@ -72,7 +70,4 @@ static MjpegServer mjpegServer2 = new MjpegServer("serve_Blur", 1182);
     public static RelativeEncoder BR = CANBackRight.getEncoder();
     public static RelativeEncoder FL = CANFrontLeft.getEncoder();
     public static RelativeEncoder FR = CANFrontRight.getEncoder();
-=======
-    public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
->>>>>>> 021089928c071ba43c9dc4afe61007e40bb5e255
 }

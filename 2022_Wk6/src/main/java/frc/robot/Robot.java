@@ -385,6 +385,8 @@ break;
   @Override
   public void teleopPeriodic() {
 
+    System.out.println("ultrasonic says : " + Components.ultrasonic.get());
+
     if(Math.abs(Components.XBController.getRawAxis(2))>0.1)
     {
     Components.Indexer2.set(Components.XBController.getRawAxis(2)*indexerPower);
