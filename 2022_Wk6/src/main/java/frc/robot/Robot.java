@@ -12,6 +12,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -97,9 +104,17 @@ public class Robot extends TimedRobot {
     // Components.intakePneumatic.set(Value.kReverse);
     Components.intakePneumatic.set(Value.kForward); //Out
     
+    
     //Initial Pos:
     // Components.HoodServo.setPosition(0.5);
     // Components.HoodServo2.setPosition(0.5);
+
+
+    Components.cvSink.setSource(Components.usbCamera);
+    Components.mjpegServer2.setSource(Components.outputStream);
+    Components.mjpegServer1.setSource(Components.usbCamera);
+
+
   }
 
   /**
@@ -110,7 +125,16 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+
+
+
+// Creates the CvSink and connects it to the UsbCamera
+CvSink cvSink = CameraServer.getVideo();
+
+// Creates the CvSource and MjpegServer [2] and connects them
+CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -360,6 +384,8 @@ break;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    System.out.println("ultrasonic says : " + Components.ultrasonic.get());
 
     if(Math.abs(Components.XBController.getRawAxis(2))>0.1)
     {
