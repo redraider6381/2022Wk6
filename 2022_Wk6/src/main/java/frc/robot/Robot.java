@@ -35,8 +35,8 @@ public class Robot extends TimedRobot {
 
 //Teleop Variables
   public static double drivePower = 0.25;
-  public static double indexerPower = 0.375;
-  public static double ShootingPower = 0.375;
+  public static double indexerPower = 0.33;
+  public static double ShootingPower = 0.354;
   public static double uptakeSpeed = -0.5;
 
   double leftYAxis;
@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
     Components.BL.setPositionConversionFactor(0.1);
 
     // Components.intakePneumatic.set(Value.kReverse);
-    Components.intakePneumatic.set(Value.kForward); //Out
+    // Components.intakePneumatic.set(Value.kForward); //Out
     
     
     //Initial Pos:
@@ -110,9 +110,9 @@ public class Robot extends TimedRobot {
     // Components.HoodServo2.setPosition(0.5);
 
 
-    Components.cvSink.setSource(Components.usbCamera);
-    Components.mjpegServer2.setSource(Components.outputStream);
-    Components.mjpegServer1.setSource(Components.usbCamera);
+    // Components.cvSink.setSource(Components.usbCamera);
+    // Components.mjpegServer2.setSource(Components.outputStream);
+    // Components.mjpegServer1.setSource(Components.usbCamera);
 
 
   }
@@ -130,10 +130,10 @@ public class Robot extends TimedRobot {
 
 
 // Creates the CvSink and connects it to the UsbCamera
-CvSink cvSink = CameraServer.getVideo();
+// CvSink cvSink = CameraServer.getVideo();
 
 // Creates the CvSource and MjpegServer [2] and connects them
-CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
+// CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
   }
 
   /**
@@ -385,7 +385,11 @@ break;
   @Override
   public void teleopPeriodic() {
 
-    System.out.println("ultrasonic says : " + Components.ultrasonic.get());
+    // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
+    // System.out.println(Components.ultrasonic.get());
+    System.out.println("lidar says : "+Components.lidar.get());
+    // System.out.println(Components.lidar.get());
+
 
     if(Math.abs(Components.XBController.getRawAxis(2))>0.1)
     {
@@ -527,16 +531,16 @@ break;
     // } 
     if(Components.happyStick.getRawButton(6)){
       System.out.println("Should be off");
-      Components.intakePneumatic.set(Value.kOff);
+      // Components.intakePneumatic.set(Value.kOff);
     }
 
   if(Components.happyStick.getRawButton(7)){
     System.out.println("Should be in");
-    Components.intakePneumatic.set(Value.kReverse);
+    // Components.intakePneumatic.set(Value.kReverse);
   }
   if(Components.happyStick.getRawButton(8)){
     System.out.println("Should be out");
-    Components.intakePneumatic.set(Value.kForward);
+    // Components.intakePneumatic.set(Value.kForward);
   }
   }
   private static void setDriveForMecanum(Mecanum.Motion motion) {
