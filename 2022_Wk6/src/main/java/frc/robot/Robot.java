@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -419,16 +421,16 @@ public class Robot extends TimedRobot {
     System.out.println("lidar says : " + Components.lidar.get());
     // System.out.println(Components.lidar.get());
 
-    if (Math.abs(Components.XBController.getRawAxis(2)) > 0.1) {
-      Components.Indexer2.set(Components.XBController.getRawAxis(2) * indexerPower);
-      Components.Indexer1.set(Components.XBController.getRawAxis(2) * indexerPower);
-    } else if (Math.abs(Components.XBController.getRawAxis(3)) > 0.1) {
-      Components.Indexer2.set(-Components.XBController.getRawAxis(3) * indexerPower);
-      Components.Indexer1.set(-Components.XBController.getRawAxis(3) * indexerPower);
-    } else {
-      Components.Indexer2.set(0);
-      Components.Indexer1.set(0);
-    }
+    // if (Math.abs(Components.XBController.getRawAxis(2)) > 0.1) {
+    //   Components.Indexer2.set(Components.XBController.getRawAxis(2) * indexerPower);
+    //   Components.Indexer1.set(Components.XBController.getRawAxis(2) * indexerPower);
+    // } else if (Math.abs(Components.XBController.getRawAxis(3)) > 0.1) {
+    //   Components.Indexer2.set(-Components.XBController.getRawAxis(3) * indexerPower);
+    //   Components.Indexer1.set(-Components.XBController.getRawAxis(3) * indexerPower);
+    // } else {
+    //   Components.Indexer2.set(0);
+    //   Components.Indexer1.set(0);
+    // }
 
     // if(Math.abs(Components.XBController.getRawAxis(1))>0.075)
     // {
@@ -460,6 +462,8 @@ public class Robot extends TimedRobot {
     rightYAxis = -Components.XBController.getRawAxis(5);
     leftXAxis = Components.XBController.getRawAxis(0);
     rightXAxis = -Components.XBController.getRawAxis(4);
+
+    
     // Hood Controls
     // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
     // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
@@ -469,39 +473,33 @@ public class Robot extends TimedRobot {
     boolean R = Components.XBController.getRightBumper();
 
     // Shooter Code:
-    if (Components.happyStick.getRawAxis(1) > 0.1) {
+    if (Components.XBController2.getLeftY() > 0.1) {
       // fowards intake and indexer
-      Components.intakeMotor.set(-1);
-      Components.Indexer2.set(-indexerPower);
-      Components.Indexer1.set(-indexerPower);
+      Components.intakeMotor.set(1);
+      Components.Indexer2.set(indexerPower);
+      Components.Indexer1.set(indexerPower);
 
-    } else if (Components.happyStick.getRawAxis(1) < -0.1) {
+    } else if (Components.XBController2.getLeftY() < -0.1) {
       // Backwards intake
       // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
       // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
-      Components.intakeMotor.set(1);
+      Components.intakeMotor.set(-1);
       // Components.Indexer2.set(-indexerPower);
       // Components.Indexer1.set(-indexerPower);
-      if (Components.happyStick.getRawButton(3)) {
         // Backwards indexer
-        Components.Indexer2.set(indexerPower);
-        Components.Indexer1.set(indexerPower);
-      } else {
+        Components.Indexer2.set(-indexerPower);
+        Components.Indexer1.set(-indexerPower);
+      } 
+      else {
+        Components.intakeMotor.set(0);
         // otherwise indexer stays how it is
         Components.Indexer2.set(0);
         Components.Indexer1.set(0);
       }
 
-    }
-
-    else {
-      // Components.CANShooter1.set(0);
-      // Components.CANShooter2.set(0);
-      Components.intakeMotor.set(0);
-    }
-
-    // Uptake Code:
-    if (Components.happyStick.getRawButton(1)) {
+    // Shooter Code:
+    if (Components.XBController2.getRightTriggerAxis()>0)
+    {
       System.out.println("Shooting!!!");
       Components.CANShooter1.set(ShootingPower);
       Components.CANShooter2.set(ShootingPower);
@@ -520,29 +518,31 @@ public class Robot extends TimedRobot {
       drivePower = 0.25;
     }
 
-    if ((Components.happyStick.getRawButton(2))) {
-
+    if (Components.XBController2.getLeftTriggerAxis()>0) 
+    {
       // Components.intakeMotor.set(-1);
       Components.Uptake.set(uptakeSpeed);
     } else {
       Components.Uptake.set(0);
     }
-    // else
+    //  // else
     // {
     // Component.intakeMotor.set(0);
     // }
-    if (Components.happyStick.getRawButton(6)) {
+
+
+    if (Components.XBController2.getPOV() ==90 ||Components.XBController2.getPOV() ==270){
       System.out.println("Should be off");
-      // Components.intakePneumatic.set(Value.kOff);
+      Components.intakePneumatic.set(Value.kOff); //off
     }
 
-    if (Components.happyStick.getRawButton(7)) {
+    if (Components.XBController2.getPOV() ==180){
       System.out.println("Should be in");
-      // Components.intakePneumatic.set(Value.kReverse);
+      Components.intakePneumatic.set(Value.kReverse); //in
     }
-    if (Components.happyStick.getRawButton(8)) {
+    if (Components.XBController2.getPOV() ==0){
       System.out.println("Should be out");
-      // Components.intakePneumatic.set(Value.kForward);
+      Components.intakePneumatic.set(Value.kForward); //out
     }
     table = NetworkTableInstance.getDefault().getTable("limelight");
     distance = 2.6416; // meter
