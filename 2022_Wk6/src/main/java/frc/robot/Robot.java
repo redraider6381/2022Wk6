@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
   // Teleop Variables
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
-  public static double ShootingPower = 0.354;
+  public static double ShootingPower = 0.34;
   public static double uptakeSpeed = -0.5;
 
   NetworkTableEntry tx;
@@ -544,23 +544,23 @@ public class Robot extends TimedRobot {
       System.out.println("Should be out");
       // Components.intakePneumatic.set(Value.kForward);
     }
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    distance = 2.6416; // meter
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
+    // table = NetworkTableInstance.getDefault().getTable("limelight");
+    // distance = 2.6416; // meter
+    // NetworkTableEntry tx = table.getEntry("tx");
+    // NetworkTableEntry ty = table.getEntry("ty");
 
-    NetworkTableEntry tv = table.getEntry("tv");
+    // NetworkTableEntry tv = table.getEntry("tv");
 
-    if (validTarget() == true) {
-      // System.out.println(tx + "" + ty);
-      System.out.println("Distance:" + distanceFromTarget());
-      System.out.println("angle from target:" + angleFromTarget());
-      System.out.println("side to side angle from target:" + tx.getDouble(0.0));
-    } else {
-      System.out.println("No tape");
-    }
-    limeTable.getEntry("ledMode").setNumber(1);
-    updateLimelightDashboard();
+    // if (validTarget() == true) {
+    //   // System.out.println(tx + "" + ty);
+    //   System.out.println("Distance:" + distanceFromTarget());
+    //   System.out.println("angle from target:" + angleFromTarget());
+    //   System.out.println("side to side angle from target:" + tx.getDouble(0.0));
+    // } else {
+    //   System.out.println("No tape");
+    // }
+    // limeTable.getEntry("ledMode").setNumber(1);
+    // updateLimelightDashboard();
 
   }
 
