@@ -31,7 +31,7 @@ public class Components {
     public static CANSparkMax CANBackRight    = new CANSparkMax(12, MotorType.kBrushless);
     public static CANSparkMax CANFrontLeft    = new CANSparkMax(6, MotorType.kBrushless);
     public static CANSparkMax CANFrontRight   = new CANSparkMax(14, MotorType.kBrushless);
-    public static XboxController XBController= new XboxController(0);
+    public static XboxController XBController = new XboxController(0);
     public static DoubleSolenoid intakePneumatic = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
     public static Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     public static CANSparkMax Indexer1    = new CANSparkMax(5, MotorType.kBrushless);
