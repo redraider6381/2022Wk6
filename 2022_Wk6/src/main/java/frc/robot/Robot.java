@@ -428,6 +428,8 @@ public class Robot extends TimedRobot {
     DigitalInput digitalSource = new DigitalInput(0);
     LidarLitePWM lidar = new LidarLitePWM(digitalSource);
     System.out.println("Lidar says " + lidar.getDistance() + " cm, maybe.");
+
+    
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
     // System.out.println(Components.ultrasonic.get());
     // System.out.println("lidar says : " + Components.lidar.get());
