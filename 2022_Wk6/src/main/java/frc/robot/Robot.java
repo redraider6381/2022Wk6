@@ -6,6 +6,8 @@ package frc.robot;
 
 import javax.lang.model.util.ElementScanner6;
 
+import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalSource;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -23,6 +25,7 @@ import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,6 +38,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  */
 
 public class Robot extends TimedRobot {
+
+
+  
+    
+
+
   private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
   // int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
 
@@ -416,9 +425,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    DigitalInput digitalSource = new DigitalInput(0);
+    LidarLitePWM lidar = new LidarLitePWM(digitalSource);
+    System.out.println("Lidar says " + lidar.getDistance() + " cm, maybe.");
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
     // System.out.println(Components.ultrasonic.get());
-    System.out.println("lidar says : " + Components.lidar.get());
+    // System.out.println("lidar says : " + Components.lidar.get());
     // System.out.println(Components.lidar.get());
 
     // if (Math.abs(Components.XBController.getRawAxis(2)) > 0.1) {

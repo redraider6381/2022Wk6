@@ -22,7 +22,6 @@ import edu.wpi.first.cscore.MjpegServer;
 
 
 
-import edu.wpi.first.wpilibj.Ultrasonic;                                       
 
 
 
@@ -63,7 +62,7 @@ public class Components {
 
 
 // public static AnalogPotentiometer ultrasonic = new AnalogPotentiometer(0, 195, 0);
-public static AnalogPotentiometer lidar = new AnalogPotentiometer(0, 1, 0);
+// public static AnalogPotentiometer lidar = new AnalogPotentiometer(0, 1, 0);
 
 
 
@@ -77,6 +76,6 @@ public static AnalogPotentiometer lidar = new AnalogPotentiometer(0, 1, 0);
     public static RelativeEncoder FL = CANFrontLeft.getEncoder();
     public static RelativeEncoder FR = CANFrontRight.getEncoder();
 
-    public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
+    // public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
 
 }
