@@ -15,31 +15,35 @@
         static double power = 0.2; 
         public static void drive(double dist){
             //power = Components.pid.calculate(Components.BL.getPosition(), dist);
-            if(dist<Components.BL.getPosition()){ //backwards
+            if(dist<0){ //backwards
                     Components.CANBackLeft.set(-power);
                     Components.CANBackRight.set(-power);
                     Components.CANFrontLeft.set(-power);
                     Components.CANFrontRight.set(-power);
-                if(Components.BL.getPosition() < dist){
+                    System.out.println("Going backwards"+Components.BL.getPosition());
+                if(Components.BL.getPosition() <= dist){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    System.out.println("Done going backwards");
                     Robot.AutoStep++;
                 }
 
             }
-            else if(dist>Components.BL.getPosition()) //fowards 
+            else if(dist>0) //fowards 
             {
                 Components.CANBackLeft.set(power);
                 Components.CANBackRight.set(power);
                 Components.CANFrontLeft.set(power);
                 Components.CANFrontRight.set(power);
-                if(Components.BL.getPosition() > dist){
+                System.out.println("Going fowards"+Components.BL.getPosition());
+                if(Components.BL.getPosition() >= dist){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    System.out.println("Done going fowards");
                     Robot.AutoStep++;
                 }
             }
@@ -47,35 +51,41 @@
 
         public static Timer uptakeTimer = new Timer();
         public static void uptake(double ballNumber){
+            //Possibly recalc shooting speed from distance
             Components.Uptake.set(Robot.uptakeSpeed);
             Components.Indexer1.set(Robot.indexerPower);
             Components.Indexer2.set(Robot.indexerPower);
-            if(uptakeTimer.get() > 1.5*ballNumber){
+            if(uptakeTimer.get() > 1*ballNumber){
+                //stops Intake and Indexer
                 Components.Uptake.set(0);
                 Components.Indexer1.set(0);
-                Components.Indexer2.set(0);    
+                Components.Indexer2.set(0);
+                //stops flywheel
+                Components.CANShooter1.set(0);
+                Components.CANShooter2.set(0);
+                Robot.AutoStep++;
             }
         }
 
         static double turnPower = 0.2;
-        public static void turn(double degrees){
-            if(degrees > Components.gyro.getAngle()){
+        public static void turn(double degrees, Boolean direction){
+            if(direction){ //clockwise
                 Components.CANBackLeft.set(turnPower);
                 Components.CANBackRight.set(-turnPower);
                 Components.CANFrontLeft.set(turnPower);
                 Components.CANFrontRight.set(-turnPower);
-                if (degrees < Components.gyro.getAngle()){
+                if (degrees <= Components.gyro.getAngle()){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
                 }
-            } else if(degrees < Components.gyro.getAngle()){
+            } else if(!direction){ //counterclockwise
                 Components.CANBackLeft.set(-turnPower);
                 Components.CANBackRight.set(turnPower);
                 Components.CANFrontLeft.set(-turnPower);
                 Components.CANFrontRight.set(turnPower);
-                if (degrees > Components.gyro.getAngle()){
+                if (degrees >= Components.gyro.getAngle()){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
