@@ -456,14 +456,16 @@ public class Robot extends TimedRobot {
             System.out.println("case 4: Turning and moving to ball 2");
             //turn to ball 2 
             Autonomous.turn(70,true);
-            //if angle is right run intake and indexer and go forward to ball 2
+            break;
+          case 5:
+            //run intake and indexer and go forward to ball 2
             Components.Indexer1.set(indexerPower);
             Components.Indexer2.set(indexerPower);
             Components.intakeMotor.set(1);
             Components.BL.setPosition(0);
             Autonomous.drive(108);
             break;
-          case 5:
+          case 6:
             System.out.println("case 5: Starting flywheel and returning to tarmac");
             // //stop intake and indexer and run flywheel
             // Components.Indexer1.set(0);
@@ -475,11 +477,11 @@ public class Robot extends TimedRobot {
             Components.BL.setPosition(0);
             Autonomous.drive(-108);
             break;
-          case 6:
+          case 7:
             System.out.println("case 6: Turning towards hub");
             //turn to angle
             break;
-          case 7:
+          case 8:
             System.out.println("case 7: Shooting 1 ball");
             //run uptake, wait, stop uptake and flywheel
             Autonomous.uptakeTimer.reset();
@@ -487,12 +489,12 @@ public class Robot extends TimedRobot {
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
             break;
-          case 8:
+          case 9:
             System.out.println("case 8: Turning towards ball 3");
             //turn toward ball 3
             Autonomous.turn(82,true);
             break;
-          case 9:
+          case 10:
             System.out.println("case 9: Going to pick up balls 3 and 4");
             //run intake and indexer
             Components.Indexer1.set(indexerPower);
@@ -503,14 +505,14 @@ public class Robot extends TimedRobot {
             Components.BL.setPosition(0);
             Autonomous.drive(256);
             break;
-          case 10:
-          //pause to pick up ball 4
-          System.out.println("case 10: Starting to Wait for 4th ball");
-          Timer.delay(3);
-          System.out.println("Done Waiting for 4th ball");
-          AutoStep++;
-            break;
           case 11:
+            //pause to pick up ball 4
+            System.out.println("case 10: Starting to Wait for 4th ball");
+            Timer.delay(3);
+            System.out.println("Done Waiting for 4th ball");
+            AutoStep++;
+            break;
+          case 12:
             System.out.println("case 11: Starting flywheel and returning to tarmac");
             //stop intake and indexer
             Components.Indexer1.set(0);
@@ -523,7 +525,7 @@ public class Robot extends TimedRobot {
             Components.BL.setPosition(0);
             Autonomous.drive(-256);
             break;
-          case 12:
+          case 13:
             System.out.println("case 12: Turning to Hub and Shooting 2 balls");
             //turn to angle
             //Run uptake, wait, stop uptake
@@ -533,8 +535,8 @@ public class Robot extends TimedRobot {
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
             break;
-          case 13:
-            System.out.println("case 13: Move off tarmac");
+          case 14:
+            System.out.println("case 13: Moving off tarmac");
             //go forward til off tarmac
             Autonomous.drive(80);
             break;

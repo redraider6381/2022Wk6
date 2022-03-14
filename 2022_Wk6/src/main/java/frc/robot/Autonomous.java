@@ -79,6 +79,7 @@
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    Robot.AutoStep++;
                 }
             } else if(!direction){ //counterclockwise
                 Components.CANBackLeft.set(-turnPower);
@@ -90,6 +91,7 @@
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    Robot.AutoStep++;
                 }
             }
         }
