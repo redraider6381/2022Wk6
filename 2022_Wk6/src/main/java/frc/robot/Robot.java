@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button. Button;
 
+
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -22,6 +23,7 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -64,6 +66,8 @@ public class Robot extends TimedRobot {
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String k5BallAuto = "5 ball Auto ";
+
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -86,7 +90,7 @@ public class Robot extends TimedRobot {
 
   Timer timer = new Timer();
 
-  int AutoStep = 0;
+  static int AutoStep = 0;
 
   // Auto Variables
   public double driveSpeed = 0.25;
@@ -136,14 +140,15 @@ public class Robot extends TimedRobot {
     Components.CANFrontLeft.set(0);
     Components.CANFrontRight.set(0);
     Components.BL.setPosition(0);
-    Components.BL.setPositionConversionFactor(0.1);
+
+
+    Components.BL.setPositionConversionFactor(1/Math.PI); //Important (maybe should be just pi)
+
+    //might be important for gyro
+    Components.gyro.calibrate();
 
     // Components.intakePneumatic.set(Value.kReverse);
     // Components.intakePneumatic.set(Value.kForward); //Out
-
-    // Initial Pos:
-    // Components.HoodServo.setPosition(0.5);
-    // Components.HoodServo2.setPosition(0.5);
 
     // Components.cvSink.setSource(Components.usbCamera);
     // Components.mjpegServer2.setSource(Components.outputStream);
@@ -407,6 +412,132 @@ public class Robot extends TimedRobot {
           // System.out.println("keep it all running until the end " + timer.get());
 
           // break;
+        }
+        break;
+        case k5BallAuto: 
+
+        switch (AutoStep) {
+          case 0:
+            System.out.println("Starting 5 ball Auto");
+            System.out.println("case 0: Picking up Ball 1");
+            //run intake and indexer
+            Components.Indexer1.set(indexerPower);
+            Components.Indexer2.set(indexerPower);
+            Components.intakeMotor.set(1);
+            //go forward to ball 1 and adds to autosteps
+            Components.BL.setPosition(0);
+            Autonomous.drive(47);
+            break;
+          case 1:
+            System.out.println("case 1: Returning to Tarmac and Starting Flywheel");
+            //stop intake and indexer
+            Components.Indexer1.set(0);
+            Components.Indexer2.set(0);
+            Components.intakeMotor.set(0);
+            //go backwards to tarmac
+            Components.BL.setPosition(0);
+            Autonomous.drive(-87);
+            //start flywheel
+            Components.CANShooter1.set(ShootingPower);
+            Components.CANShooter2.set(ShootingPower);
+            break;
+          case 2:
+            System.out.println("case 2: Turning to Hub");
+            //turn to angle with limelight
+            break;
+          case 3:
+            System.out.println("case 3: Shooting 2 balls");
+            //Run uptake, wait, stop uptake
+            Autonomous.uptakeTimer.reset();
+            Autonomous.uptake(2);
+            //stop flywheel
+            Components.CANShooter1.set(0);
+            Components.CANShooter2.set(0);
+            break;
+          case 4:
+            System.out.println("case 4: Turning and moving to ball 2");
+            //turn to ball 2 
+            Autonomous.turn(70);
+            //if angle is right run intake and indexer and go forward to ball 2
+            Components.Indexer1.set(indexerPower);
+            Components.Indexer2.set(indexerPower);
+            Components.intakeMotor.set(1);
+            Components.BL.setPosition(0);
+            Autonomous.drive(108);
+            break;
+          case 5:
+            System.out.println("case 5: Starting flywheel and returning to tarmac");
+            //stop intake and indexer and run flywheel
+            Components.Indexer1.set(0);
+            Components.Indexer2.set(0);
+            Components.intakeMotor.set(0);
+            Components.CANShooter1.set(ShootingPower);
+            Components.CANShooter2.set(ShootingPower);
+            //go backwards to tarmac
+            Components.BL.setPosition(0);
+            Autonomous.drive(-108);
+            break;
+          case 6:
+            System.out.println("case 6: Turning towards hub");
+            //turn to angle
+            break;
+          case 7:
+            System.out.println("case 7: Shooting 1 ball");
+            //run uptake, wait, stop uptake and flywheel
+            Autonomous.uptakeTimer.reset();
+            Autonomous.uptake(1);
+            Components.CANShooter1.set(0);
+            Components.CANShooter2.set(0);
+            break;
+          case 8:
+            System.out.println("case 8: Turning towards ball 3");
+            //turn toward ball 3
+            Autonomous.turn(82);
+            break;
+          case 9:
+            System.out.println("case 9: Going to pick up balls 3 and 4");
+            //run intake and indexer
+            Components.Indexer1.set(indexerPower);
+            Components.Indexer2.set(indexerPower);
+            Components.intakeMotor.set(1);
+            //turn to ball 3 
+            //drive to ball 3 - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
+            Components.BL.setPosition(0);
+            Autonomous.drive(256);
+            //pause to pick up ball 4
+            Timer.delay(3);
+            if(Components.BL.getPosition() > 256){
+              
+            }
+            break;
+          case 10:
+            System.out.println("case 10: Starting flywheel and returning to tarmac");
+            //stop intake and indexer
+            Components.Indexer1.set(0);
+            Components.Indexer2.set(0);
+            Components.intakeMotor.set(0);
+            //start flywheel
+            Components.CANShooter1.set(ShootingPower);
+            Components.CANShooter2.set(ShootingPower);
+            //turn and drive to tarmac - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
+            Components.BL.setPosition(0);
+            Autonomous.drive(-256);
+            break;
+          case 11:
+            System.out.println("case 11: Turning to Hub and Shooting 2 balls");
+            //turn to angle
+            //Run uptake, wait, stop uptake
+            Autonomous.uptakeTimer.reset();
+            Autonomous.uptake(2);
+            //stop flywheel
+            Components.CANShooter1.set(0);
+            Components.CANShooter2.set(0);
+            break;
+          case 12:
+            System.out.println("case 12: Move off tarmac");
+            //go forward til off tarmac
+            Autonomous.drive(100);
+            break;
         }
         break;
     }

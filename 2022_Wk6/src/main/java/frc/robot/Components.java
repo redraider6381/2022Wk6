@@ -3,6 +3,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -78,4 +79,6 @@ public class Components {
 
     // public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
 
+    //gyro
+    public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
 }
