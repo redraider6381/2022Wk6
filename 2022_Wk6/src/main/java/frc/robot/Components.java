@@ -72,10 +72,11 @@ public class Components {
 
 
     // encoders
-    public static RelativeEncoder BL = CANBackLeft.getEncoder();
-    public static RelativeEncoder BR = CANBackRight.getEncoder();
-    public static RelativeEncoder FL = CANFrontLeft.getEncoder();
-    public static RelativeEncoder FR = CANFrontRight.getEncoder();
+    // public static RelativeEncoder BL = CANBackLeft.getEncoder();
+    public static RelativeEncoder BL = CANBackRight.getEncoder(); //Mwahaha!!!!!
+    // public static RelativeEncoder BR = CANBackRight.getEncoder();
+    // public static RelativeEncoder FL = CANFrontLeft.getEncoder();
+    // public static RelativeEncoder FR = CANFrontRight.getEncoder();
 
     // public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
 
