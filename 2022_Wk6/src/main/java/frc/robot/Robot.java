@@ -132,8 +132,9 @@ public class Robot extends TimedRobot {
     Components.CANBackRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
     Components.CANFrontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    // m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("5BallAuto", k5BallAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     // limitSwitch = new DigitalInput(1);
@@ -204,7 +205,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     AutoStep = 0;
     m_autoSelected = m_chooser.getSelected();
-    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    m_autoSelected = SmartDashboard.getString("Auto Selector", k5BallAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     Components.BL.setPosition(0);
     timer.reset();
@@ -435,6 +436,7 @@ public class Robot extends TimedRobot {
             Autonomous.drive(47);
             break;
           case 1:
+            Components.intakePneumatic.set(Value.kOff);
             System.out.println("case 1: Returning to Tarmac and Starting Flywheel");
             //stop intake and indexer
             // Components.Indexer1.set(0);
@@ -630,6 +632,7 @@ public class Robot extends TimedRobot {
     // Shooter Code:
     if (Components.XBController2.getLeftY() > 0.1) {
       // fowards intake and indexer
+      Components.intakePneumatic.set(Value.kOff);
       Components.intakeMotor.set(1);
       Components.Indexer2.set(indexerPower);
       Components.Indexer1.set(indexerPower);
@@ -642,6 +645,7 @@ public class Robot extends TimedRobot {
       // Components.Indexer2.set(-indexerPower);
       // Components.Indexer1.set(-indexerPower);
         // Backwards indexer
+        Components.intakePneumatic.set(Value.kOff);
         Components.Indexer2.set(-indexerPower);
         Components.Indexer1.set(-indexerPower);
       } 
