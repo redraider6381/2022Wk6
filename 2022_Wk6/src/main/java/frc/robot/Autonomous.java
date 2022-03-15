@@ -6,7 +6,8 @@
 
     import edu.wpi.first.wpilibj.AnalogGyro;
     import edu.wpi.first.wpilibj.Timer;
-    import frc.robot.Mecanum;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import frc.robot.Mecanum;
 
     public class Autonomous {
 
@@ -16,6 +17,11 @@
         public static void drive(double dist){
             //power = Components.pid.calculate(Components.BL.getPosition(), dist);
             if(dist<0){ //backwards
+                // power = -Components.LimelightPID.calculate(Components.BL.getPosition(), dist);
+                // if(power<-0.5)
+                // {
+                //     power = -0.5;
+                // }
                     Components.CANBackLeft.set(-power);
                     Components.CANBackRight.set(-power);
                     Components.CANFrontLeft.set(-power);
@@ -33,6 +39,11 @@
             }
             else if(dist>0) //fowards 
             {
+                // power = Components.LimelightPID.calculate(Components.BL.getPosition(), dist);
+                // if(power>0.5)
+                // {
+                //     power = 0.5;
+                // }
                 Components.CANBackLeft.set(power);
                 Components.CANBackRight.set(power);
                 Components.CANFrontLeft.set(power);
@@ -70,6 +81,7 @@
         static double turnPower = 0.2;
         public static void turn(double degrees, Boolean direction){
             if(direction){ //clockwise
+                // turnPower = Components.LimelightPID.calculate(Components.gyro.getAngle(), degrees);
                 Components.CANBackLeft.set(turnPower);
                 Components.CANBackRight.set(-turnPower);
                 Components.CANFrontLeft.set(turnPower);
@@ -82,6 +94,7 @@
                     Robot.AutoStep++;
                 }
             } else if(!direction){ //counterclockwise
+                // turnPower = -Components.LimelightPID.calculate(Components.gyro.getAngle(), degrees);
                 Components.CANBackLeft.set(-turnPower);
                 Components.CANBackRight.set(turnPower);
                 Components.CANFrontLeft.set(-turnPower);
@@ -103,15 +116,15 @@
                 // turns the robot until the angle is 0
                 if(Robot.tx.getDouble(0.0) > 2 ||Robot.tx.getDouble(0.0) < -2) {
                   if(Robot.tx.getDouble(0.0) < -2 ){
-                  // move robot counterclockwise
-                  // speed = -0.2;
-                  System.out.println(Robot.tx.getDouble(0.0));
-                  turnPower = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
-                Components.CANFrontLeft.set(-turnPower);
-                Components.CANFrontRight.set(turnPower);
-                Components.CANBackLeft.set(-turnPower);
-                Components.CANBackRight.set(turnPower);
-                System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+turnPower);
+                    // move robot counterclockwise
+                    // speed = -0.2;
+                    System.out.println(Robot.tx.getDouble(0.0));
+                    turnPower = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+                    Components.CANFrontLeft.set(-turnPower);
+                    Components.CANFrontRight.set(turnPower);
+                    Components.CANBackLeft.set(-turnPower);
+                    Components.CANBackRight.set(turnPower);
+                    System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+turnPower);
                 }
                 else if(Robot.tx.getDouble(0.0) > 2){
                 // speed = -0.2;

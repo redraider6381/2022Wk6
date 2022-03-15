@@ -89,7 +89,7 @@ public class Components {
     // pids
     public static PIDController LimelightPID = new PIDController(0.01, 0, 0);
     // public static PIDController TurnPID = new PIDController(0.01, 0, 0);
-    public static PIDController TranslationalPID = new PIDController(0.003, 0, 0);
+    public static PIDController TranslationalPID = new PIDController(0.0075, 0, 0);
     // public static ProfiledPIDController TranslationalPID = new ProfiledPIDController();
 
 }
