@@ -29,6 +29,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 
+import edu.wpi.first.cscore.UsbCamera;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -41,11 +43,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Robot extends TimedRobot {
 
+  //Webcam:
+  UsbCamera camera1;
 
-  
-    
-
-
+  //Limelight
   private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
   // int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
 
@@ -77,9 +78,9 @@ public class Robot extends TimedRobot {
   public static double ShootingPower = 0.34;
   public static double uptakeSpeed = -0.5;
 
-  NetworkTableEntry tx;
+  static NetworkTableEntry tx;
   NetworkTableEntry ty;
-  NetworkTableEntry tv;
+  static NetworkTableEntry tv;
   NetworkTable table;
 
   double leftYAxis;
@@ -121,6 +122,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    //Webcam:
+    camera1 = CameraServer.startAutomaticCapture(0);
+    camera1.setResolution(160, 120);
+
     Components.gyro.reset();
     Components.CANBackLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
     Components.CANFrontLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -143,7 +148,7 @@ public class Robot extends TimedRobot {
     Components.BL.setPosition(0);
 
 
-    Components.BL.setPositionConversionFactor(1/Math.PI); //Important (maybe should be just pi)
+    Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
 
     //might be important for gyro
     Components.gyro.calibrate();
@@ -445,6 +450,7 @@ public class Robot extends TimedRobot {
           case 2:
             System.out.println("case 2: Turning to Hub");
             //turn to angle with limelight
+            Autonomous.LimelightTurnToAligned();
             break;
           case 3:
             System.out.println("case 3: Shooting 2 balls");
@@ -453,11 +459,12 @@ public class Robot extends TimedRobot {
             Autonomous.uptake(2);
             break;
           case 4:
-            System.out.println("case 4: Turning and moving to ball 2");
+            System.out.println("case 4: Turning to ball 2");
             //turn to ball 2 
             Autonomous.turn(70,true);
             break;
           case 5:
+            System.out.println("case 5: Moving to ball 2");
             //run intake and indexer and go forward to ball 2
             Components.Indexer1.set(indexerPower);
             Components.Indexer2.set(indexerPower);
@@ -466,7 +473,7 @@ public class Robot extends TimedRobot {
             Autonomous.drive(108);
             break;
           case 6:
-            System.out.println("case 5: Starting flywheel and returning to tarmac");
+            System.out.println("case 6: Starting flywheel and returning to tarmac");
             // //stop intake and indexer and run flywheel
             // Components.Indexer1.set(0);
             // Components.Indexer2.set(0);
@@ -478,11 +485,12 @@ public class Robot extends TimedRobot {
             Autonomous.drive(-108);
             break;
           case 7:
-            System.out.println("case 6: Turning towards hub");
+            System.out.println("case 7: Turning towards hub");
             //turn to angle
+            Autonomous.LimelightTurnToAligned();
             break;
           case 8:
-            System.out.println("case 7: Shooting 1 ball");
+            System.out.println("case 8: Shooting 1 ball");
             //run uptake, wait, stop uptake and flywheel
             Autonomous.uptakeTimer.reset();
             Autonomous.uptake(1);
@@ -490,12 +498,12 @@ public class Robot extends TimedRobot {
             Components.CANShooter2.set(0);
             break;
           case 9:
-            System.out.println("case 8: Turning towards ball 3");
+            System.out.println("case 9: Turning towards ball 3");
             //turn toward ball 3
             Autonomous.turn(82,true);
             break;
           case 10:
-            System.out.println("case 9: Going to pick up balls 3 and 4");
+            System.out.println("case 10: Going to pick up balls 3 and 4");
             //run intake and indexer
             Components.Indexer1.set(indexerPower);
             Components.Indexer2.set(indexerPower);
@@ -507,13 +515,13 @@ public class Robot extends TimedRobot {
             break;
           case 11:
             //pause to pick up ball 4
-            System.out.println("case 10: Starting to Wait for 4th ball");
+            System.out.println("case 11: Starting to Wait for 4th ball");
             Timer.delay(3);
             System.out.println("Done Waiting for 4th ball");
             AutoStep++;
             break;
           case 12:
-            System.out.println("case 11: Starting flywheel and returning to tarmac");
+            System.out.println("case 12: Starting flywheel and returning to tarmac");
             //stop intake and indexer
             Components.Indexer1.set(0);
             Components.Indexer2.set(0);
@@ -525,8 +533,12 @@ public class Robot extends TimedRobot {
             Components.BL.setPosition(0);
             Autonomous.drive(-256);
             break;
-          case 13:
-            System.out.println("case 12: Turning to Hub and Shooting 2 balls");
+          case 13:      
+            System.out.println("case 13: Turning to Hub");
+            Autonomous.LimelightTurnToAligned();
+            break;
+          case 14:       
+            System.out.println("case 14: Shooting 2 balls");
             //turn to angle
             //Run uptake, wait, stop uptake
             Autonomous.uptakeTimer.reset();
@@ -535,8 +547,8 @@ public class Robot extends TimedRobot {
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
             break;
-          case 14:
-            System.out.println("case 13: Moving off tarmac");
+          case 15:
+            System.out.println("case 15: Moving off tarmac");
             //go forward til off tarmac
             Autonomous.drive(80);
             break;
@@ -557,10 +569,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-
-    DigitalInput digitalSource = new DigitalInput(0);
-    LidarLitePWM lidar = new LidarLitePWM(digitalSource);
-    System.out.println("Lidar says " + lidar.getDistance() + " cm, maybe.");
 
     
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
@@ -676,7 +684,7 @@ public class Robot extends TimedRobot {
     // {
     // Component.intakeMotor.set(0);
     // }
-
+    double speed = -0.2;
 
     if (Components.XBController2.getPOV() ==90 ||Components.XBController2.getPOV() ==270){
       System.out.println("Should be off");
@@ -691,12 +699,27 @@ public class Robot extends TimedRobot {
       System.out.println("Should be out");
       Components.intakePneumatic.set(Value.kForward); //out
     }
-    // table = NetworkTableInstance.getDefault().getTable("limelight");
-    // distance = 2.6416; // meter
-    // NetworkTableEntry tx = table.getEntry("tx");
-    // NetworkTableEntry ty = table.getEntry("ty");
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    distance = 2.6416; // meter
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    tv = table.getEntry("tv");
 
-    // NetworkTableEntry tv = table.getEntry("tv");
+    if(validTarget()&& !Components.XBController.getAButton())
+    {
+        System.out.println("Side Angle:"+tx.getDouble(0.0));
+        // System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
+    }
+      else if (validTarget() && Components.XBController.getAButton()){
+        Autonomous.LimelightTurnToAligned();
+    }
+    else if(Components.XBController.getAButton()){
+    System.out.println("Don't see the tape");
+    }
+    // turns the robot until the limelight has a target
+    
+  
+    
 
     // if (validTarget() == true) {
     //   // System.out.println(tx + "" + ty);
@@ -731,26 +754,22 @@ public class Robot extends TimedRobot {
 
   }
 
-  public boolean validTarget() {
+  public static boolean validTarget() {
     if (tv.getDouble(0.0) == 0) {
-      return false;
+    return false;
     } else {
-      return true;
+    return true;
     }
-  }
-
-  public double angleFromTarget() {
-    return ty.getDouble(0.0);
-  }
-
-  public double sideangleFromTarget() {
+    }
+    public double UpAndDown_AngleFromTarget(){
+      return ty.getDouble(0.0);
+    }
+  public double SideToSide_AngleFromTarget(){
     return tx.getDouble(0.0);
   }
-
-  public double distanceFromTarget() {
-    return (104 * Math.sin(ty.getDouble(0.0))) / (Math.sin(90 -
-        ty.getDouble(0.0)));
-  }
+  public double distanceFromTarget(){
+    return (74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125);
+      }
 
   /** This function is called once when the robot is disabled. */
   @Override

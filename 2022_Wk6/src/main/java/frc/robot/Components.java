@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj.Servo;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -17,6 +18,8 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
@@ -82,4 +85,11 @@ public class Components {
 
     //gyro
     public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
+
+    // pids
+    public static PIDController LimelightPID = new PIDController(0.01, 0, 0);
+    // public static PIDController TurnPID = new PIDController(0.01, 0, 0);
+    public static PIDController TranslationalPID = new PIDController(0.003, 0, 0);
+    // public static ProfiledPIDController TranslationalPID = new ProfiledPIDController();
+
 }

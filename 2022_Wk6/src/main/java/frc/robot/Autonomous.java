@@ -95,6 +95,49 @@
                 }
             }
         }
+        // static double turnPower = 0.2;
+        public static void LimelightTurnToAligned(){
+            if (Robot.validTarget() && Components.XBController.getAButton()){
+                // move the robot
+                
+                // turns the robot until the angle is 0
+                if(Robot.tx.getDouble(0.0) > 2 ||Robot.tx.getDouble(0.0) < -2) {
+                  if(Robot.tx.getDouble(0.0) < -2 ){
+                  // move robot counterclockwise
+                  // speed = -0.2;
+                  System.out.println(Robot.tx.getDouble(0.0));
+                  turnPower = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+                Components.CANFrontLeft.set(-turnPower);
+                Components.CANFrontRight.set(turnPower);
+                Components.CANBackLeft.set(-turnPower);
+                Components.CANBackRight.set(turnPower);
+                System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+turnPower);
+                }
+                else if(Robot.tx.getDouble(0.0) > 2){
+                // speed = -0.2;
+                System.out.println(Robot.tx.getDouble(0.0));
+                turnPower = Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+                Components.CANFrontLeft.set(turnPower);
+                Components.CANFrontRight.set(-turnPower);
+                Components.CANBackLeft.set(turnPower);
+                Components.CANBackRight.set(-turnPower);
+                System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+turnPower);
+        
+                // SmartDashboard.putData(Se);
+                }
+                }
+                if(!(Robot.tx.getDouble(0.0)>2 ||Robot.tx.getDouble(0.0)<-2))
+                {
+                System.out.println("At tape");
+                Robot.AutoStep++;
+                // Robot.SmartDashboard.getEntry("Ready to Shoot!");
+                }
+            
+            }
+            else{
+            System.out.println("Don't see the tape");
+            }
+        }
         // public static void forward(double go){
         //     double power = Components.pid.calculate(Components.BL.getPosition(), go);
         //     Components.CANBackLeft.set(power);
