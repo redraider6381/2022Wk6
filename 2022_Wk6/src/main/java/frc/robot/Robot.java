@@ -236,7 +236,7 @@ public class Robot extends TimedRobot {
             Autonomous.drive(48);
             break;
           case 2:
-          System.out.println("case 2: Stopping");
+          System.out.println("case 2: Stopping just in case");
           Components.CANBackLeft.set(0);
           Components.CANBackRight.set(0);
           Components.CANFrontLeft.set(0);
@@ -244,21 +244,25 @@ public class Robot extends TimedRobot {
             break;
         }
         break;
+
+
+
+
         case kTurn90Auto:
 
-        // Go forward 48 inches:
+        //turns 90 degrees
         switch (AutoStep) {
           case 0:
           System.out.println("case 0: Starting Auto");
-          Components.BL.setPosition(0);
+          Components.gyro.reset();
           AutoStep++;
           break;
           case 1:
-          System.out.println("case 1: Moving 48 in forward");
-            Autonomous.drive(48);
+          System.out.println("case 1: Turning 90 degrees clockwise");
+            Autonomous.turn(90, true);
             break;
           case 2:
-          System.out.println("case 2: Stopping");
+          System.out.println("case 2: Stopping just in case");
           Components.CANBackLeft.set(0);
           Components.CANBackRight.set(0);
           Components.CANFrontLeft.set(0);
@@ -406,6 +410,10 @@ public class Robot extends TimedRobot {
             break;
         }
         break;
+
+
+
+
         case k1BallAuto:
           switch (AutoStep) {
             case 0:
@@ -462,11 +470,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
+    double targetHeight = 2.6416; // meter, 104 inches
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     tv = table.getEntry("tv");
 
-    double targetHeight = 2.6416; // meters, 104 inches
 
 
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
