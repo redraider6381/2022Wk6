@@ -20,6 +20,8 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
@@ -68,7 +70,8 @@ public class Components {
 // public static AnalogPotentiometer ultrasonic = new AnalogPotentiometer(0, 195, 0);
 // public static AnalogPotentiometer lidar = new AnalogPotentiometer(0, 1, 0);
 
-
+    // limelight
+    // public static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
     //Uptake:
     public static CANSparkMax RightUptake = new CANSparkMax(9, MotorType.kBrushless);

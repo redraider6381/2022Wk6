@@ -42,28 +42,27 @@ import edu.wpi.first.cscore.UsbCamera;
  */
 
 public class Robot extends TimedRobot {
-
   //Webcam:
   UsbCamera camera1;
 
   //Limelight
-  private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
+  // private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
   // int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
 
-  public void updateLimelightDashboard() {
-    String limelightState;
+  // public void updateLimelightDashboard() {
+  //   String limelightState;
 
-    int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
+  //   int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
 
-    if (limeStateNum == 1)
-      limelightState = "OFF";
-    else if (limeStateNum == 3)
-      limelightState = "ON";
-    else
-      limelightState = "UNKNOWN";
+  //   if (limeStateNum == 1)
+  //     limelightState = "OFF";
+  //   else if (limeStateNum == 3)
+  //     limelightState = "ON";
+  //   else
+  //     limelightState = "UNKNOWN";
 
-    SmartDashboard.putString("LimelightState", limelightState);
-  }
+  //   SmartDashboard.putString("LimelightState", limelightState);
+  // }
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
@@ -637,7 +636,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    double targetHeight = 2.6416; // meter
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    tv = table.getEntry("tv");
+
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
     // System.out.println(Components.ultrasonic.get());
     // System.out.println("lidar says : " + Components.lidar.get());
