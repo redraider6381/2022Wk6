@@ -462,10 +462,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
-    double targetHeight = 2.6416; // meter
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     tv = table.getEntry("tv");
+
+    double targetHeight = 2.6416; // meters, 104 inches
+
 
     // System.out.println("ultrasonic says : "+Components.ultrasonic.get());
     // System.out.println(Components.ultrasonic.get());
