@@ -137,17 +137,11 @@ public class Robot extends TimedRobot {
     Components.CANBackRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
     Components.CANFrontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-<<<<<<< Updated upstream
-    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    // m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("Old", kDefaultAuto);
+    m_chooser.addOption("Old2", kCustomAuto);
     m_chooser.addOption("5BallAuto", k5BallAuto);
-=======
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    m_chooser.addOption("My Auto", k5BallAuto);
-    m_chooser.addOption("My Auto", k1BallAuto);
-    m_chooser.addOption("My Auto", k48InchesAuto);
->>>>>>> Stashed changes
+    m_chooser.addOption("1BallAuto", k1BallAuto);
+    m_chooser.addOption("48InchesAuto", k48InchesAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     // limitSwitch = new DigitalInput(1);
