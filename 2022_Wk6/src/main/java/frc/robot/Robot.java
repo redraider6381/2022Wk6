@@ -68,6 +68,9 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private static final String k5BallAuto = "5 ball Auto ";
+  private static final String k1BallAuto = "1 ball Auto ";
+  private static final String k48InchesAuto = "48 Inches Auto";
+
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -134,9 +137,17 @@ public class Robot extends TimedRobot {
     Components.CANBackRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
     Components.CANFrontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
+<<<<<<< Updated upstream
     // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     // m_chooser.addOption("My Auto", kCustomAuto);
     m_chooser.addOption("5BallAuto", k5BallAuto);
+=======
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("My Auto", k5BallAuto);
+    m_chooser.addOption("My Auto", k1BallAuto);
+    m_chooser.addOption("My Auto", k48InchesAuto);
+>>>>>>> Stashed changes
     SmartDashboard.putData("Auto choices", m_chooser);
 
     // limitSwitch = new DigitalInput(1);
@@ -423,6 +434,25 @@ public class Robot extends TimedRobot {
           // break;
         }
         break;
+        case k48InchesAuto:
+
+        // Go forward 48 inches:
+        switch (AutoStep) {
+          case 0:
+          Components.BL.setPosition(0);
+          AutoStep++;
+          break;
+          case 1:
+            Autonomous.drive(48);
+            break;
+          case 2:
+          Components.CANBackLeft.set(0);
+          Components.CANBackRight.set(0);
+          Components.CANFrontLeft.set(0);
+          Components.CANFrontRight.set(0);
+            break;
+        }
+        break;
         case k5BallAuto: 
 
         switch (AutoStep) {
@@ -558,7 +588,46 @@ public class Robot extends TimedRobot {
             break;
         }
         break;
-    }
+        case k1BallAuto:
+          switch (AutoStep) {
+            case 0:
+              System.out.println("Starting 5 ball Auto");
+              System.out.println("case 0: Picking up Ball 1");
+              //run intake and indexer
+              Components.Indexer1.set(indexerPower);
+              Components.Indexer2.set(indexerPower);
+              Components.intakeMotor.set(1);
+              //go forward to ball 1 and adds to autosteps
+              Components.BL.setPosition(0);
+              Autonomous.drive(47);
+              break;
+            case 1:
+              System.out.println("case 1: Returning to Tarmac and Starting Flywheel");
+              //stop intake and indexer
+              // Components.Indexer1.set(0);
+              // Components.Indexer2.set(0);
+              // Components.intakeMotor.set(0);
+              //go backwards to tarmac
+              Components.BL.setPosition(0);
+              Autonomous.drive(-87);
+              //start flywheel
+              Components.CANShooter1.set(ShootingPower);
+              Components.CANShooter2.set(ShootingPower);
+              break;
+            case 2:
+              System.out.println("case 2: Turning to Hub");
+              //turn to angle with limelight
+              Autonomous.LimelightTurnToAligned();
+              break;
+            case 3:
+              System.out.println("case 3: Shooting 2 balls");
+              //Run uptake, wait, stop uptake
+              Autonomous.uptakeTimer.reset();
+              Autonomous.uptake(2);
+              break;
+          }
+            break;
+      }
   }
 
   /** This function is called once when teleop is enabled. */
