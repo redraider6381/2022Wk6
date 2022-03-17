@@ -33,6 +33,7 @@ import frc.robot.Mecanum;
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
                     System.out.println("Done going backwards");
+                    Components.BL.setPosition(0);
                     Robot.AutoStep++;
                 }
 
@@ -55,6 +56,7 @@ import frc.robot.Mecanum;
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
                     System.out.println("Done going fowards");
+                    Components.BL.setPosition(0);
                     Robot.AutoStep++;
                 }
             }
@@ -91,6 +93,7 @@ import frc.robot.Mecanum;
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    Components.BL.setPosition(0);
                     Robot.AutoStep++;
                 }
             } else if(!direction){ //counterclockwise
@@ -104,6 +107,7 @@ import frc.robot.Mecanum;
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
+                    Components.BL.setPosition(0);
                     Robot.AutoStep++;
                 }
             }
