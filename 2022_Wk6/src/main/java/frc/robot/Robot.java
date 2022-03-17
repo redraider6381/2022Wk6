@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   // Teleop Variables
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
-  public static double ShootingPower = 0.34;
+  public static double ShootingPower = 0.4;
   public static double uptakeSpeed = -0.5;
 
   static NetworkTableEntry tx;
@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
   double rightYAxis;
   double leftXAxis;
   double rightXAxis;
+  double limeLightTurnSpeed;
   int caseNumber = 1;
 
   Timer timer = new Timer();
@@ -122,6 +123,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Components.compressor.enableDigital();
     //Webcam:
     camera1 = CameraServer.startAutomaticCapture(0);
     camera1.setResolution(160, 120);
@@ -624,7 +626,24 @@ public class Robot extends TimedRobot {
     // Hood Controls
     // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
     // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
-    setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, rightXAxis, rightYAxis));
+    double SpeedToClimb = 0.25*0.6;
+    double TurnSensitivity = 0.15; //based on the distance really
+    if(Components.XBController.getXButton())
+    {
+      Components.CANFrontLeft.set(SpeedToClimb);
+      Components.CANFrontRight.set(SpeedToClimb);
+      Components.CANBackLeft.set(SpeedToClimb);
+      Components.CANBackRight.set(SpeedToClimb);    }
+      else if(Components.XBController.getYButton()) //As it straffes to the right, turns clockwise aka turns to thr right, as it strafes left turns left
+      {
+        Components.CANFrontLeft.set(drivePower*(leftXAxis + leftXAxis*TurnSensitivity));
+        Components.CANFrontRight.set(drivePower*(-leftXAxis - leftXAxis*TurnSensitivity));
+        Components.CANBackLeft.set(drivePower*(-leftXAxis   + leftXAxis*TurnSensitivity));
+        Components.CANBackRight.set(drivePower*(leftXAxis - leftXAxis*TurnSensitivity));
+      }
+    else{
+      setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, rightXAxis, rightYAxis));
+    }
 
     boolean L = Components.XBController.getLeftBumper();
     boolean R = Components.XBController.getRightBumper();
@@ -657,7 +676,7 @@ public class Robot extends TimedRobot {
       }
 
     // Shooter Code:
-    if (Components.XBController2.getRightTriggerAxis()>0)
+    if (Components.XBController2.getRightTriggerAxis()>0.05)
     {
       System.out.println("Shooting!!!");
       Components.CANShooter1.set(ShootingPower);
@@ -677,10 +696,12 @@ public class Robot extends TimedRobot {
       drivePower = 0.25;
     }
 
-    if (Components.XBController2.getLeftTriggerAxis()>0) 
+    if (Components.XBController2.getLeftTriggerAxis()>0.05) 
     {
       // Components.intakeMotor.set(-1);
       Components.Uptake.set(uptakeSpeed);
+      Components.Indexer2.set(-indexerPower);
+      Components.Indexer1.set(-indexerPower);
     } else {
       Components.Uptake.set(0);
     }
@@ -715,7 +736,49 @@ public class Robot extends TimedRobot {
         // System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
     }
       else if (validTarget() && Components.XBController.getAButton()){
-        Autonomous.LimelightTurnToAligned();
+        // Autonomous.LimelightTurnToAligned();
+        if (Robot.validTarget() && Components.XBController.getAButton()){
+          // move the robot
+          
+          // turns the robot until the angle is 0
+          if(Robot.tx.getDouble(0.0) > 2 ||Robot.tx.getDouble(0.0) < -2) {
+            if(Robot.tx.getDouble(0.0) < -2 ){
+              // move robot counterclockwise
+              // speed = -0.2;
+              System.out.println(Robot.tx.getDouble(0.0));
+              limeLightTurnSpeed = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+              Components.CANFrontLeft.set(-limeLightTurnSpeed);
+              Components.CANFrontRight.set(limeLightTurnSpeed);
+              Components.CANBackLeft.set(-limeLightTurnSpeed);
+              Components.CANBackRight.set(limeLightTurnSpeed);
+              // setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, limeLightTurnSpeed, rightYAxis));
+              System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+limeLightTurnSpeed);
+          }
+          else if(Robot.tx.getDouble(0.0) > 2){
+          // speed = -0.2;
+          System.out.println(Robot.tx.getDouble(0.0));
+          limeLightTurnSpeed = Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+          Components.CANFrontLeft.set(limeLightTurnSpeed);
+          Components.CANFrontRight.set(-limeLightTurnSpeed);
+          Components.CANBackLeft.set(limeLightTurnSpeed);
+          Components.CANBackRight.set(-limeLightTurnSpeed);
+          // setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, limeLightTurnSpeed, rightYAxis));
+          System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+limeLightTurnSpeed);
+  
+          // SmartDashboard.putData(Se);
+          }
+          }
+          if(!(Robot.tx.getDouble(0.0)>2 ||Robot.tx.getDouble(0.0)<-2))
+          {
+          System.out.println("At tape");
+          Robot.AutoStep++;
+          // Robot.SmartDashboard.getEntry("Ready to Shoot!");
+          }
+      
+      }
+      else{
+      System.out.println("Don't see the tape");
+      }
     }
     else if(Components.XBController.getAButton()){
     System.out.println("Don't see the tape");
@@ -771,6 +834,8 @@ public class Robot extends TimedRobot {
   public double SideToSide_AngleFromTarget(){
     return tx.getDouble(0.0);
   }
+
+
   public double distanceFromTarget(){
     return (74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125);
       }
