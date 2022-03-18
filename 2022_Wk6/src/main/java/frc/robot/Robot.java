@@ -94,6 +94,7 @@ public class Robot extends TimedRobot {
   int caseNumber = 1;
 
   Timer timer = new Timer();
+  Timer shootingTimer = new Timer();
 
   static int AutoStep = 0;
 
@@ -266,6 +267,7 @@ public class Robot extends TimedRobot {
           break;
           case 1:
           System.out.println("case 1: Turning 90 degrees clockwise");
+          Autonomous.setPneumatics();
             Autonomous.turn(90, true);
             break;
           case 2:
@@ -292,6 +294,7 @@ public class Robot extends TimedRobot {
             Components.intakeMotor.set(1);
 
             Components.intakePneumatic.set(Value.kOff); //use a timer to wait 0.5 seconds before doing this
+            Autonomous.setPneumatics();
 
             //go forward to ball 1 and adds to autosteps
             Autonomous.drive(47);
@@ -304,7 +307,7 @@ public class Robot extends TimedRobot {
             // Components.Indexer2.set(0);
             // Components.intakeMotor.set(0);
             //go backwards to tarmac
-            Components.BL.setPosition(0);
+            // Components.BL.setPosition(0);
             Autonomous.drive(-87);
             //start flywheel
             Components.CANShooter1.set(ShootingPower);
@@ -332,7 +335,7 @@ public class Robot extends TimedRobot {
             Components.Indexer1.set(indexerPower);
             Components.Indexer2.set(indexerPower);
             Components.intakeMotor.set(1);
-            Components.BL.setPosition(0);
+            // Components.BL.setPosition(0);
             Autonomous.drive(108);
             break;
           case 6:
@@ -344,7 +347,7 @@ public class Robot extends TimedRobot {
             Components.CANShooter1.set(ShootingPower);
             Components.CANShooter2.set(ShootingPower);
             //go backwards to tarmac
-            Components.BL.setPosition(0);
+            // Components.BL.setPosition(0);
             Autonomous.drive(-108);
             break;
           case 7:
@@ -373,7 +376,7 @@ public class Robot extends TimedRobot {
             Components.intakeMotor.set(1);
             //turn to ball 3 
             //drive to ball 3 - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
-            Components.BL.setPosition(0);
+            // Components.BL.setPosition(0);
             Autonomous.drive(256);
             break;
           case 11:
@@ -393,7 +396,7 @@ public class Robot extends TimedRobot {
             Components.CANShooter1.set(ShootingPower);
             Components.CANShooter2.set(ShootingPower);
             //turn and drive to tarmac - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
-            Components.BL.setPosition(0);
+            // Components.BL.setPosition(0);
             Autonomous.drive(-256);
             break;
           case 13:      
@@ -426,12 +429,13 @@ public class Robot extends TimedRobot {
             case 0:
               System.out.println("Starting 5 ball Auto");
               System.out.println("case 0: Picking up Ball 1");
+              Autonomous.setPneumatics();
               //run intake and indexer
               Components.Indexer1.set(indexerPower);
               Components.Indexer2.set(indexerPower);
               Components.intakeMotor.set(1);
               //go forward to ball 1 and adds to autosteps
-              Components.BL.setPosition(0);
+              // Components.BL.setPosition(0);
               Autonomous.drive(47);
               break;
             case 1:
@@ -441,7 +445,7 @@ public class Robot extends TimedRobot {
               // Components.Indexer2.set(0);
               // Components.intakeMotor.set(0);
               //go backwards to tarmac
-              Components.BL.setPosition(0);
+              // Components.BL.setPosition(0);
               Autonomous.drive(-87);
               //start flywheel
               Components.CANShooter1.set(ShootingPower);
@@ -466,6 +470,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    shootingTimer.reset();
+
   }
 
   /**
@@ -565,7 +571,9 @@ public class Robot extends TimedRobot {
       Components.Indexer2.set(indexerPower);
       Components.Indexer1.set(indexerPower);
 
-    } else if (Components.XBController2.getLeftY() > 0.05) {
+    } 
+  
+    else if (Components.XBController2.getLeftY() > 0.05) {
       // Backwards intake
       // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
       // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
@@ -748,6 +756,7 @@ public class Robot extends TimedRobot {
   public double distanceFromTarget(){
     return (74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125);
       }
+      
 
   /** This function is called once when the robot is disabled. */
   @Override
