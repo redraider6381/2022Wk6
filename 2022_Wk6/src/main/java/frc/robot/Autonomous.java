@@ -13,50 +13,65 @@ import frc.robot.Mecanum;
 
             
 
-        static double power = 0.2; 
+        static double Leftpower = 0.2; 
+        static double RIghtpower = 0.2; 
         public static void drive(double dist){
             //power = Components.pid.calculate(Components.BL.getPosition(), dist);
             if(dist<0){ //backwards
-                // power = -Components.LimelightPID.calculate(Components.BL.getPosition(), dist);
-                // if(power<-0.5)
-                // {
-                //     power = -0.5;
-                // }
-                    Components.CANBackLeft.set(-power);
-                    Components.CANBackRight.set(-power);
-                    Components.CANFrontLeft.set(-power);
-                    Components.CANFrontRight.set(-power);
-                    System.out.println("Going backwards"+Components.BL.getPosition());
-                if(Components.BL.getPosition() <= dist){
+                // Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
+                // RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+                RIghtpower = Leftpower = 0.25;
+                if(Leftpower<-0.5)
+                {
+                    Leftpower = -0.5;
+                }
+                if(RIghtpower<-0.5)
+                {
+                    RIghtpower = -0.5;
+                }
+                    Components.CANBackLeft.set(-Leftpower);
+                    Components.CANBackRight.set(-RIghtpower);
+                    Components.CANFrontLeft.set(-Leftpower);
+                    Components.CANFrontRight.set(-RIghtpower);
+                    System.out.println("Going backwards: Left Pos:"+ Components.BL.getPosition()+"Left Speed: "+ Leftpower+"RightPos: "+Components.BR.getPosition()+"RightSpeed " + RIghtpower);
+                    if((Components.BL.getPosition() <= dist)&&(Components.BR.getPosition() <= dist)){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
                     System.out.println("Done going backwards");
                     Components.BL.setPosition(0);
+                    Components.BR.setPosition(0);
                     Robot.AutoStep++;
                 }
 
             }
             else if(dist>0) //fowards 
             {
-                // power = Components.LimelightPID.calculate(Components.BL.getPosition(), dist);
-                // if(power>0.5)
-                // {
-                //     power = 0.5;
-                // }
-                Components.CANBackLeft.set(power);
-                Components.CANBackRight.set(power);
-                Components.CANFrontLeft.set(power);
-                Components.CANFrontRight.set(power);
-                System.out.println("Going fowards"+Components.BL.getPosition());
-                if(Components.BL.getPosition() >= dist){
+                // RIghtpower = Leftpower = 0.25;
+                Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
+                RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+                if(Leftpower>0.4)
+                {
+                    Leftpower = 0.4;
+                }
+                if(RIghtpower>0.4)
+                {
+                    RIghtpower = 0.4;
+                }
+                Components.CANBackLeft.set(Leftpower);
+                Components.CANBackRight.set(RIghtpower);
+                Components.CANFrontLeft.set(Leftpower);
+                Components.CANFrontRight.set(RIghtpower);
+                System.out.println("Going fowards: Left Pos:"+ Components.BL.getPosition()+"Left Speed: "+ Leftpower+"RightPos: "+Components.BR.getPosition()+"RightSpeed " + RIghtpower);
+                if(Components.BL.getPosition() >= dist&&(Components.BR.getPosition() >= dist)){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
                     Components.CANFrontRight.set(0);
                     System.out.println("Done going fowards");
                     Components.BL.setPosition(0);
+                    Components.BR.setPosition(0);
                     Robot.AutoStep++;
                 }
             }
@@ -81,14 +96,17 @@ import frc.robot.Mecanum;
         }
 
         static double turnPower = 0.2;
+        static double GyroFactor = 20000;
+        // static double GyroFactor = 1;
         public static void turn(double degrees, Boolean direction){
             if(direction){ //clockwise
+                System.out.println("Turning clockwise Degrees ="+Components.gyro.getAngle()*GyroFactor);
                 // turnPower = Components.LimelightPID.calculate(Components.gyro.getAngle(), degrees);
                 Components.CANBackLeft.set(turnPower);
                 Components.CANBackRight.set(-turnPower);
                 Components.CANFrontLeft.set(turnPower);
                 Components.CANFrontRight.set(-turnPower);
-                if (degrees <= Components.gyro.getAngle()){
+                if (Components.gyro.getAngle()*GyroFactor <=degrees){
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
@@ -97,12 +115,14 @@ import frc.robot.Mecanum;
                     Robot.AutoStep++;
                 }
             } else if(!direction){ //counterclockwise
+                System.out.println("Turning counterclockwise Degrees ="+Components.gyro.getAngle()*GyroFactor);
                 // turnPower = -Components.LimelightPID.calculate(Components.gyro.getAngle(), degrees);
                 Components.CANBackLeft.set(-turnPower);
                 Components.CANBackRight.set(turnPower);
                 Components.CANFrontLeft.set(-turnPower);
                 Components.CANFrontRight.set(turnPower);
-                if (degrees >= Components.gyro.getAngle()){
+                if (Components.gyro.getAngle()*GyroFactor >= degrees){
+                    System.out.println("Done turning");
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
@@ -123,7 +143,7 @@ import frc.robot.Mecanum;
                     // move robot counterclockwise
                     // speed = -0.2;
                     System.out.println(Robot.tx.getDouble(0.0));
-                    turnPower = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+                    turnPower = Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
                     Components.CANFrontLeft.set(-turnPower);
                     Components.CANFrontRight.set(turnPower);
                     Components.CANBackLeft.set(-turnPower);
@@ -133,7 +153,7 @@ import frc.robot.Mecanum;
                 else if(Robot.tx.getDouble(0.0) > 2){
                 // speed = -0.2;
                 System.out.println(Robot.tx.getDouble(0.0));
-                turnPower = Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+                turnPower = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
                 Components.CANFrontLeft.set(turnPower);
                 Components.CANFrontRight.set(-turnPower);
                 Components.CANBackLeft.set(turnPower);

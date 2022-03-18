@@ -151,10 +151,10 @@ public class Robot extends TimedRobot {
     Components.CANFrontLeft.set(0);
     Components.CANFrontRight.set(0);
     Components.BL.setPosition(0);
-
+    Components.BR.setPosition(0);
 
     Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
-
+    Components.BR.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
     //might be important for gyro
     Components.gyro.calibrate();
 
@@ -208,10 +208,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     AutoStep = 0;
-    m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", k5BallAuto);
+    m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto selected: " + m_autoSelected);
     Components.BL.setPosition(0);
+    Components.BR.setPosition(0);
     timer.reset();
     timer.start();
 
@@ -229,6 +230,7 @@ public class Robot extends TimedRobot {
           case 0:
           System.out.println("case 0: Starting Auto");
           Components.BL.setPosition(0);
+          Components.BR.setPosition(0);
           AutoStep++;
           break;
           case 1:
@@ -236,7 +238,7 @@ public class Robot extends TimedRobot {
             Autonomous.drive(48);
             break;
           case 2:
-          System.out.println("case 2: Stopping");
+          // System.out.println("case 2: Stopping");
           Components.CANBackLeft.set(0);
           Components.CANBackRight.set(0);
           Components.CANFrontLeft.set(0);
@@ -246,19 +248,20 @@ public class Robot extends TimedRobot {
         break;
         case kTurn90Auto:
 
-        // Go forward 48 inches:
         switch (AutoStep) {
           case 0:
           System.out.println("case 0: Starting Auto");
           Components.BL.setPosition(0);
+          Components.BR.setPosition(0);
+          Components.gyro.reset();
           AutoStep++;
           break;
           case 1:
-          System.out.println("case 1: Moving 48 in forward");
-            Autonomous.drive(48);
+          System.out.println("case 1: turning 90 degrees clockwise");
+            Autonomous.turn(-90,true);
             break;
           case 2:
-          System.out.println("case 2: Stopping");
+          // System.out.println("case 2: Stopping");
           Components.CANBackLeft.set(0);
           Components.CANBackRight.set(0);
           Components.CANFrontLeft.set(0);
@@ -294,6 +297,7 @@ public class Robot extends TimedRobot {
             // Components.intakeMotor.set(0);
             //go backwards to tarmac
             Components.BL.setPosition(0);
+            Components.BR.setPosition(0);
             Autonomous.drive(-87);
             //start flywheel
             Components.CANShooter1.set(ShootingPower);
@@ -322,6 +326,7 @@ public class Robot extends TimedRobot {
             Components.Indexer2.set(indexerPower);
             Components.intakeMotor.set(1);
             Components.BL.setPosition(0);
+            Components.BR.setPosition(0);
             Autonomous.drive(108);
             break;
           case 6:
@@ -334,6 +339,7 @@ public class Robot extends TimedRobot {
             Components.CANShooter2.set(ShootingPower);
             //go backwards to tarmac
             Components.BL.setPosition(0);
+            Components.BR.setPosition(0);
             Autonomous.drive(-108);
             break;
           case 7:
@@ -363,6 +369,7 @@ public class Robot extends TimedRobot {
             //turn to ball 3 
             //drive to ball 3 - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
             Components.BL.setPosition(0);
+            Components.BR.setPosition(0);
             Autonomous.drive(256);
             break;
           case 11:
@@ -383,6 +390,7 @@ public class Robot extends TimedRobot {
             Components.CANShooter2.set(ShootingPower);
             //turn and drive to tarmac - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
             Components.BL.setPosition(0);
+            Components.BR.setPosition(0);
             Autonomous.drive(-256);
             break;
           case 13:      
@@ -417,6 +425,7 @@ public class Robot extends TimedRobot {
               Components.intakeMotor.set(1);
               //go forward to ball 1 and adds to autosteps
               Components.BL.setPosition(0);
+              Components.BR.setPosition(0);
               Autonomous.drive(47);
               break;
             case 1:
@@ -427,6 +436,7 @@ public class Robot extends TimedRobot {
               // Components.intakeMotor.set(0);
               //go backwards to tarmac
               Components.BL.setPosition(0);
+              Components.BR.setPosition(0);
               Autonomous.drive(-87);
               //start flywheel
               Components.CANShooter1.set(ShootingPower);
@@ -520,14 +530,17 @@ public class Robot extends TimedRobot {
     // Hood Controls
     // Components.HoodServo.setPosition(Components.happyStick.getRawAxis(3));
     // Components.HoodServo2.setPosition(-Components.happyStick.getRawAxis(3));
-    double SpeedToClimb = 0.25*0.6;
+    // double SpeedToClimb = 0.25*0.7;
+    double SpeedToClimb = -0.7;
     double TurnSensitivity = 0.15; //based on the distance really
     if(Components.XBController.getXButton())
     {
-      Components.CANFrontLeft.set(SpeedToClimb);
-      Components.CANFrontRight.set(SpeedToClimb);
-      Components.CANBackLeft.set(SpeedToClimb);
-      Components.CANBackRight.set(SpeedToClimb);    }
+      // Components.CANFrontLeft.set(SpeedToClimb);
+      // Components.CANFrontRight.set(SpeedToClimb);
+      // Components.CANBackLeft.set(SpeedToClimb);
+      // Components.CANBackRight.set(SpeedToClimb);
+      setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, -SpeedToClimb, rightXAxis, rightYAxis));
+    }
       else if(Components.XBController.getYButton()) //As it straffes to the right, turns clockwise aka turns to thr right, as it strafes left turns left
       {
         Components.CANFrontLeft.set(drivePower*(leftXAxis + leftXAxis*TurnSensitivity));
@@ -543,14 +556,14 @@ public class Robot extends TimedRobot {
     boolean R = Components.XBController.getRightBumper();
 
     // Shooter Code:
-    if (Components.XBController2.getLeftY() > 0.1) {
+    if (Components.XBController2.getLeftY() < -0.1) {
       // fowards intake and indexer
       Components.intakePneumatic.set(Value.kOff);
       Components.intakeMotor.set(1);
       Components.Indexer2.set(indexerPower);
       Components.Indexer1.set(indexerPower);
 
-    } else if (Components.XBController2.getLeftY() < -0.1) {
+    } else if (Components.XBController2.getLeftY() > 0.1) {
       // Backwards intake
       // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
       // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
@@ -634,35 +647,53 @@ public class Robot extends TimedRobot {
         if (Robot.validTarget() && Components.XBController.getAButton()){
           // move the robot
           
+          double MarginOfError = 1;
+          double MaxVel = 0.6;
           // turns the robot until the angle is 0
-          if(Robot.tx.getDouble(0.0) > 2 ||Robot.tx.getDouble(0.0) < -2) {
-            if(Robot.tx.getDouble(0.0) < -2 ){
+          if(Robot.tx.getDouble(0.0) > MarginOfError ||Robot.tx.getDouble(0.0) < -MarginOfError) {
+            if(Robot.tx.getDouble(0.0) < -MarginOfError ){
               // move robot counterclockwise
               // speed = -0.2;
               System.out.println(Robot.tx.getDouble(0.0));
               limeLightTurnSpeed = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
-              Components.CANFrontLeft.set(-limeLightTurnSpeed);
-              Components.CANFrontRight.set(limeLightTurnSpeed);
-              Components.CANBackLeft.set(-limeLightTurnSpeed);
-              Components.CANBackRight.set(limeLightTurnSpeed);
-              // setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, limeLightTurnSpeed, rightYAxis));
+              if(limeLightTurnSpeed>MaxVel)
+                {
+                  limeLightTurnSpeed = MaxVel;
+                }
+              else if(limeLightTurnSpeed<-MaxVel)
+                {
+                  limeLightTurnSpeed = -MaxVel;
+                }
+              // Components.CANFrontLeft.set(-limeLightTurnSpeed);
+              // Components.CANFrontRight.set(limeLightTurnSpeed);
+              // Components.CANBackLeft.set(-limeLightTurnSpeed);
+              // Components.CANBackRight.set(limeLightTurnSpeed);
+              setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, -limeLightTurnSpeed, rightYAxis));
               System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+limeLightTurnSpeed);
           }
-          else if(Robot.tx.getDouble(0.0) > 2){
+          else if(Robot.tx.getDouble(0.0) > MarginOfError){
           // speed = -0.2;
           System.out.println(Robot.tx.getDouble(0.0));
-          limeLightTurnSpeed = Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
-          Components.CANFrontLeft.set(limeLightTurnSpeed);
-          Components.CANFrontRight.set(-limeLightTurnSpeed);
-          Components.CANBackLeft.set(limeLightTurnSpeed);
-          Components.CANBackRight.set(-limeLightTurnSpeed);
-          // setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, limeLightTurnSpeed, rightYAxis));
+          limeLightTurnSpeed = -Components.LimelightPID.calculate(Robot.tx.getDouble(0.0), 0);
+          if(limeLightTurnSpeed>MaxVel)
+            {
+              limeLightTurnSpeed = MaxVel;
+            }
+          else if(limeLightTurnSpeed<-MaxVel)
+            {
+              limeLightTurnSpeed = -MaxVel;
+            }
+          // Components.CANFrontLeft.set(limeLightTurnSpeed);
+          // Components.CANFrontRight.set(-limeLightTurnSpeed);
+          // Components.CANBackLeft.set(limeLightTurnSpeed);
+          // Components.CANBackRight.set(-limeLightTurnSpeed);
+          setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, -limeLightTurnSpeed, rightYAxis));
           System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+limeLightTurnSpeed);
   
           // SmartDashboard.putData(Se);
           }
           }
-          if(!(Robot.tx.getDouble(0.0)>2 ||Robot.tx.getDouble(0.0)<-2))
+          if(!(Robot.tx.getDouble(0.0)>MarginOfError ||Robot.tx.getDouble(0.0)<-MarginOfError))
           {
           System.out.println("At tape");
           Robot.AutoStep++;

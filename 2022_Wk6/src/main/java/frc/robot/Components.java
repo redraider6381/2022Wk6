@@ -79,7 +79,8 @@ public class Components {
 
     // encoders
     // public static RelativeEncoder BL = CANBackLeft.getEncoder();
-    public static RelativeEncoder BL = CANBackRight.getEncoder(); //Mwahaha!!!!!
+    public static RelativeEncoder BL = CANBackLeft.getEncoder();
+    public static RelativeEncoder BR = CANBackRight.getEncoder(); //Mwahaha!!!!!
     // public static RelativeEncoder BR = CANBackRight.getEncoder();
     // public static RelativeEncoder FL = CANFrontLeft.getEncoder();
     // public static RelativeEncoder FR = CANFrontRight.getEncoder();
@@ -90,9 +91,9 @@ public class Components {
     public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
 
     // pids
-    public static PIDController LimelightPID = new PIDController(0.01, 0, 0);
+    public static PIDController LimelightPID = new PIDController(0.15, 0, 0);
     // public static PIDController TurnPID = new PIDController(0.01, 0, 0);
-    public static PIDController TranslationalPID = new PIDController(0.0075, 0, 0);
+    public static PIDController TranslationalPID = new PIDController(0.0085, 0, 0);
     // public static ProfiledPIDController TranslationalPID = new ProfiledPIDController();
 
 }
