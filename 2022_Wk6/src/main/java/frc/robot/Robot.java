@@ -72,6 +72,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  //pneumatic things
+  public static Timer pneumaticsTimer = new Timer();
+
   // Teleop Variables
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
@@ -152,6 +155,9 @@ public class Robot extends TimedRobot {
     Components.CANFrontRight.set(0);
     Components.BL.setPosition(0);
 
+    //Pneumatic Things
+    Components.intakePneumatic.set(Value.kForward);
+    pneumaticsTimer.reset();
 
     Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
 
@@ -233,6 +239,7 @@ public class Robot extends TimedRobot {
           break;
           case 1:
           System.out.println("case 1: Moving 48 in forward");
+            Autonomous.setPneumatics();
             Autonomous.drive(48);
             break;
           case 2:
@@ -551,14 +558,14 @@ public class Robot extends TimedRobot {
     boolean R = Components.XBController.getRightBumper();
 
     // Shooter Code:
-    if (Components.XBController2.getLeftY() > 0.1) {
+    if (Components.XBController2.getLeftY() < -0.05) {
       // fowards intake and indexer
       Components.intakePneumatic.set(Value.kOff);
       Components.intakeMotor.set(1);
       Components.Indexer2.set(indexerPower);
       Components.Indexer1.set(indexerPower);
 
-    } else if (Components.XBController2.getLeftY() < -0.1) {
+    } else if (Components.XBController2.getLeftY() > 0.05) {
       // Backwards intake
       // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
       // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
@@ -618,11 +625,11 @@ public class Robot extends TimedRobot {
       Components.intakePneumatic.set(Value.kOff); //off
     }
 
-    if (Components.XBController2.getPOV() ==0){
+    if (Components.XBController2.getPOV() ==180){
       System.out.println("Should be in");
       Components.intakePneumatic.set(Value.kReverse); //in
     }
-    if (Components.XBController2.getPOV() ==180){
+    if (Components.XBController2.getPOV() ==0){
       System.out.println("Should be out");
       Components.intakePneumatic.set(Value.kForward); //out
     }

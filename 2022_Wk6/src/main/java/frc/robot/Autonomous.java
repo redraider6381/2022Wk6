@@ -6,12 +6,18 @@
 
     import edu.wpi.first.wpilibj.AnalogGyro;
     import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Mecanum;
 
     public class Autonomous {
 
-            
+        public static void setPneumatics(){
+            if(Robot.pneumaticsTimer.get() > 0.5){
+                Components.intakePneumatic.set(Value.kOff);
+                // Robot.AutoStep++;
+            }
+        }
 
         static double power = 0.2; 
         public static void drive(double dist){
