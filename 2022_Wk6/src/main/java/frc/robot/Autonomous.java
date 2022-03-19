@@ -15,9 +15,10 @@ public class Autonomous {
     static double Leftpower = 0.2;
     static double RIghtpower = 0.2;
     static double Divider = 1;
-    static double MaxVelocity = 0.6;
+    static double MaxVelocity = 0.2;
     static double AccelorationTime = 1;
     public static Timer Ramptimer = new Timer();
+    public static Timer waittimer = new Timer();
 
     public static void drive(double dist) {
         // power = Components.pid.calculate(Components.BL.getPosition(), dist);
@@ -25,15 +26,15 @@ public class Autonomous {
             Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
             RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
             // RIghtpower = Leftpower = 0.25;
-            if (Leftpower < -0.4) {
-                Divider = Leftpower / -0.4;
+            if (Leftpower < -MaxVelocity) {
+                Divider = Leftpower / -MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            if (RIghtpower < -0.4) {
+            if (RIghtpower < -MaxVelocity) {
                 // RIghtpower = -0.4;
-                Divider = RIghtpower / -0.4;
+                Divider = RIghtpower / -MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
@@ -53,6 +54,7 @@ public class Autonomous {
                 Components.BL.setPosition(0);
                 Components.BR.setPosition(0);
                 Autonomous.Ramptimer.reset();
+                Autonomous.waittimer.reset();
                 Robot.AutoStep++;
             }
 
@@ -96,6 +98,7 @@ public class Autonomous {
                 Components.BL.setPosition(0);
                 Components.BR.setPosition(0);
                 Autonomous.Ramptimer.reset();
+                Autonomous.waittimer.reset();
                 Robot.AutoStep++;
             }
         }
@@ -144,6 +147,7 @@ public class Autonomous {
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
                 Autonomous.Ramptimer.reset();
+                Autonomous.waittimer.reset();
                 Robot.AutoStep++;
             }
         } else if (!direction) { // counterclockwise
@@ -162,6 +166,7 @@ public class Autonomous {
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
                 Autonomous.Ramptimer.reset();
+                Autonomous.waittimer.reset();
                 Robot.AutoStep++;
             }
         }
@@ -290,6 +295,22 @@ public class Autonomous {
     // double br = forward + turning - strafing;
     // double fl = forward - turning + strafing;
     // double fr = forward + turning - strafing;
+
+    public static void setPneumatics() {
+        System.out.println("Pnuematics waiting for: "+Robot.pneumaticsTimer.get());
+        if(Robot.pneumaticsTimer.get()>0.5)
+        {
+            Components.intakePneumatic.set(Value.kOff);
+        }
+    }
+
+    public static void puase(double time) {
+        System.out.println("Waiting for: "+Robot.waitTimer.get());
+        if(Robot.waitTimer.get()>time)
+        {
+            Robot.AutoStep++;
+        }
+    }
 
     // double blspeed = Components.pid.calculate(Components.BL.getPosition(), bl);
     // double brspeed = Components.pid.calculate(Components.BR.getPosition(), br);

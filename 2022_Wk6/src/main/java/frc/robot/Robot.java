@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
 
   //pneumatic things
   public static Timer pneumaticsTimer = new Timer();
+  public static Timer waitTimer = new Timer();
 
   // Teleop Variables
   public static double drivePower = 0.25;
@@ -160,14 +161,17 @@ public class Robot extends TimedRobot {
     Components.CANFrontRight.set(0);
     Components.BL.setPosition(0);
     Components.BR.setPosition(0);
+    Components.CANShooter1.set(0);
+    Components.CANShooter2.set(0);
     Autonomous.Ramptimer.reset();
+    Autonomous.Ramptimer.start();
 
     //Pneumatic Things
     Components.intakePneumatic.set(Value.kReverse);
     pneumaticsTimer.reset();
 
-    Components.BL.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
-    Components.BR.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    Components.BL.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    Components.BR.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
     // Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
 
     //might be important for gyro
@@ -228,6 +232,8 @@ public class Robot extends TimedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
     Components.BL.setPosition(0);
     Components.BR.setPosition(0);
+    // Autonomous.Ramptimer.reset();
+    // Autonomous.Ramptimer.start();
     timer.reset();
     timer.start();
 
@@ -465,17 +471,23 @@ public class Robot extends TimedRobot {
             case 0:
               System.out.println("Starting 1 ball Auto");
               System.out.println("case 0: Picking up Ball 1");
-              // Autonomous.setPneumatics();
+              Autonomous.setPneumatics();
               //run intake and indexer
-              Components.Indexer1.set(indexerPower);
-              Components.Indexer2.set(indexerPower);
-              Components.intakeMotor.set(1);
+              Components.Indexer1.set(-indexerPower);
+              Components.Indexer2.set(-indexerPower);
+              Components.intakeMotor.set(-1);
               //go forward to ball 1 and adds to autosteps
               // Components.BL.setPosition(0);
               // Components.BR.setPosition(0);
-              Autonomous.drive(30);
+              waitTimer.reset();
+              waitTimer.start();
+              Autonomous.drive(48);
               break;
-            case 1:
+              case 1:
+              // AutoStep++;
+              Autonomous.puase(1.5);
+              break;
+            case 2:
               System.out.println("case 1: Returning to Tarmac and Starting Flywheel");
               //stop intake and indexer
               // Components.Indexer1.set(0);
@@ -485,20 +497,21 @@ public class Robot extends TimedRobot {
               // Components.BL.setPosition(0);
               // Components.BR.setPosition(0);
               Components.CANShooter1.set(ShootingPower);
+              Components.CANShooter2.set(ShootingPower);Components.CANShooter1.set(ShootingPower);
               Components.CANShooter2.set(ShootingPower);
-              Autonomous.drive(-50);
+              Autonomous.drive(-68);
               //start flywheel
               break;
-            case 2:
+            case 3:
               System.out.println("case 2: Turning to Hub");
               //turn to angle with limelight
               // Autonomous.LimelightTurnToAligned();
+              Autonomous.uptakeTimer.reset();
               AutoStep++;
               break;
-            case 3:
+            case 4:
               System.out.println("case 3: Shooting 2 balls");
               //Run uptake, wait, stop uptake
-              Autonomous.uptakeTimer.reset();
               Autonomous.uptake(2);
               break;
           }
@@ -521,7 +534,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    System.out.println("gyro Angle: "+ Components.gyro.getAngle());
+    // System.out.println("gyro Angle: "+ Components.gyro.getAngle());
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
     double targetHeight = 2.6416; // meter, 104 inches
@@ -694,7 +707,7 @@ public class Robot extends TimedRobot {
     if(validTarget()&& !Components.XBController.getAButton())
     {
         // System.out.println("Side Angle:"+tx.getDouble(0.0));
-        // System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
+        System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
     }
       else if (validTarget() && Components.XBController.getAButton()){
         // Autonomous.LimelightTurnToAligned();
