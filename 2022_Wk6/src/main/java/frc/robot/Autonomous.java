@@ -31,27 +31,27 @@ public class Autonomous {
             {
                 System.out.println("Time Accelerating: "+ Ramptimer.get());
                 AxcelleratingVelocity = MaxVelocity*Ramptimer.get()/AccelorationTime;
-                if (Leftpower > AxcelleratingVelocity) {
-                    Divider = Leftpower / AxcelleratingVelocity;
+                if (Leftpower < -AxcelleratingVelocity) {
+                    Divider = Leftpower /-AxcelleratingVelocity;
                     // Leftpower = -0.4;
                     Leftpower = Leftpower / Divider;
                     RIghtpower = RIghtpower / Divider;
                 }
-                if (RIghtpower > AxcelleratingVelocity) {
+                if (RIghtpower < -AxcelleratingVelocity) {
                     // RIghtpower = -0.4;
-                    Divider = RIghtpower / AxcelleratingVelocity;
+                    Divider = RIghtpower / -AxcelleratingVelocity;
                     // Leftpower = -0.4;
                     Leftpower = Leftpower / Divider;
                     RIghtpower = RIghtpower / Divider;
                 }
             // }
-                Components.CANBackLeft.set(Leftpower);
-                Components.CANBackRight.set(RIghtpower);
-                Components.CANFrontLeft.set(Leftpower);
-                Components.CANFrontRight.set(RIghtpower);
+                Components.CANBackLeft.set(-Leftpower);
+                Components.CANBackRight.set(-RIghtpower);
+                Components.CANFrontLeft.set(-Leftpower);
+                Components.CANFrontRight.set(-RIghtpower);
                 System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
                         + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
-                if (Components.BL.getPosition() >= dist && (Components.BR.getPosition() >= dist)) {
+                if (Components.BL.getPosition() <= dist && (Components.BR.getPosition() <= dist)) {
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
@@ -81,10 +81,10 @@ public class Autonomous {
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            Components.CANBackLeft.set(-Leftpower);
-            Components.CANBackRight.set(-RIghtpower);
-            Components.CANFrontLeft.set(-Leftpower);
-            Components.CANFrontRight.set(-RIghtpower);
+            Components.CANBackLeft.set(Leftpower);
+            Components.CANBackRight.set(RIghtpower);
+            Components.CANFrontLeft.set(Leftpower);
+            Components.CANFrontRight.set(RIghtpower);
             System.out.println("Going backwards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
                     + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
             if ((Components.BL.getPosition() <= dist) && (Components.BR.getPosition() <= dist)) {
