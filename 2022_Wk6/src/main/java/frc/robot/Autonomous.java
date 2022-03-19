@@ -15,19 +15,27 @@ import frc.robot.Mecanum;
 
         static double Leftpower = 0.2; 
         static double RIghtpower = 0.2; 
+        static double Divider = 1;
         public static void drive(double dist){
             //power = Components.pid.calculate(Components.BL.getPosition(), dist);
             if(dist<0){ //backwards
-                // Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
-                // RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-                RIghtpower = Leftpower = 0.25;
-                if(Leftpower<-0.5)
+                Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
+                RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+                // RIghtpower = Leftpower = 0.25;
+                if(Leftpower<-0.4)
                 {
-                    Leftpower = -0.5;
+                    Divider = Leftpower/-0.4;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower/Divider;
+                    RIghtpower = RIghtpower/Divider;
                 }
-                if(RIghtpower<-0.5)
+                if(RIghtpower<-0.4)
                 {
-                    RIghtpower = -0.5;
+                    // RIghtpower = -0.4;
+                    Divider = RIghtpower/-0.4;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower/Divider;
+                    RIghtpower = RIghtpower/Divider;
                 }
                     Components.CANBackLeft.set(-Leftpower);
                     Components.CANBackRight.set(-RIghtpower);
@@ -53,11 +61,18 @@ import frc.robot.Mecanum;
                 RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
                 if(Leftpower>0.4)
                 {
-                    Leftpower = 0.4;
+                    Divider = Leftpower/0.4;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower/Divider;
+                    RIghtpower = RIghtpower/Divider;
                 }
                 if(RIghtpower>0.4)
                 {
-                    RIghtpower = 0.4;
+                    // RIghtpower = -0.4;
+                    Divider = RIghtpower/0.4;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower/Divider;
+                    RIghtpower = RIghtpower/Divider;
                 }
                 Components.CANBackLeft.set(Leftpower);
                 Components.CANBackRight.set(RIghtpower);

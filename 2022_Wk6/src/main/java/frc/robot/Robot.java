@@ -153,8 +153,8 @@ public class Robot extends TimedRobot {
     Components.BL.setPosition(0);
     Components.BR.setPosition(0);
 
-    Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
-    Components.BR.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
+    Components.BL.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is: //Important (maybe should be just pi)
+    Components.BR.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is: //Important (maybe should be just pi)
     //might be important for gyro
     Components.gyro.calibrate();
 
@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
           break;
           case 1:
           System.out.println("case 1: Moving 48 in forward");
-            Autonomous.drive(48);
+            Autonomous.drive(-48);
             break;
           case 2:
           // System.out.println("case 2: Stopping");
