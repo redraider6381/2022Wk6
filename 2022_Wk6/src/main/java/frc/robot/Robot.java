@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
   private static final String k5BallAuto = "5 ball Auto ";
   private static final String k1BallAuto = "1 ball Auto ";
   private static final String k48InchesAuto = "48 Inches Auto";
+  private static final String k48InchesAutoBackwards = "-48 Inches Auto";
   private static final String kTurn90Auto = "90 degrees Auto";
 
   
@@ -144,6 +145,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("5BallAuto", k5BallAuto);
     m_chooser.addOption("1BallAuto", k1BallAuto);
     m_chooser.addOption("48InchesAuto", k48InchesAuto);
+    m_chooser.addOption("-48InchesAuto", k48InchesAutoBackwards);
     m_chooser.addOption("Turn90Auto", kTurn90Auto);
     SmartDashboard.putData("Auto choices", m_chooser);
     
@@ -158,13 +160,14 @@ public class Robot extends TimedRobot {
     Components.CANFrontRight.set(0);
     Components.BL.setPosition(0);
     Components.BR.setPosition(0);
+    Autonomous.Ramptimer.reset();
 
     //Pneumatic Things
     Components.intakePneumatic.set(Value.kReverse);
     pneumaticsTimer.reset();
 
-    Components.BL.setPositionConversionFactor((6*Math.PI)*(10/62));//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
-    Components.BR.setPositionConversionFactor((6*Math.PI)*(10/62));//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    Components.BL.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    Components.BR.setPositionConversionFactor(Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
     // Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
 
     //might be important for gyro
@@ -243,10 +246,35 @@ public class Robot extends TimedRobot {
           System.out.println("case 0: Starting Auto");
           Components.BL.setPosition(0);
           Components.BR.setPosition(0);
+          Autonomous.Ramptimer.reset();
           AutoStep++;
           break;
           case 1:
           System.out.println("case 1: Moving 48 in forward");
+            Autonomous.drive(48);
+            break;
+          case 2:
+          // System.out.println("case 2: Stopping");
+          Components.CANBackLeft.set(0);
+          Components.CANBackRight.set(0);
+          Components.CANFrontLeft.set(0);
+          Components.CANFrontRight.set(0);
+            break;
+        }
+        break;
+        case k48InchesAutoBackwards:
+
+        // Go backwards 48 inches:
+        switch (AutoStep) {
+          case 0:
+          System.out.println("case 0: Starting Auto");
+          Components.BL.setPosition(0);
+          Components.BR.setPosition(0);
+          Autonomous.Ramptimer.reset();
+          AutoStep++;
+          break;
+          case 1:
+          System.out.println("case 1: Moving 48 in backwards");
             Autonomous.drive(-48);
             break;
           case 2:
@@ -258,8 +286,6 @@ public class Robot extends TimedRobot {
             break;
         }
         break;
-
-
 
 
         case kTurn90Auto:
@@ -298,7 +324,6 @@ public class Robot extends TimedRobot {
             Components.Indexer1.set(indexerPower);
             Components.Indexer2.set(indexerPower);
             Components.intakeMotor.set(1);
-
             Components.intakePneumatic.set(Value.kOff); //use a timer to wait 0.5 seconds before doing this
             // Autonomous.setPneumatics();
 
@@ -438,7 +463,7 @@ public class Robot extends TimedRobot {
         case k1BallAuto:
           switch (AutoStep) {
             case 0:
-              System.out.println("Starting 5 ball Auto");
+              System.out.println("Starting 1 ball Auto");
               System.out.println("case 0: Picking up Ball 1");
               // Autonomous.setPneumatics();
               //run intake and indexer
@@ -448,7 +473,7 @@ public class Robot extends TimedRobot {
               //go forward to ball 1 and adds to autosteps
               // Components.BL.setPosition(0);
               // Components.BR.setPosition(0);
-              Autonomous.drive(47);
+              Autonomous.drive(30);
               break;
             case 1:
               System.out.println("case 1: Returning to Tarmac and Starting Flywheel");
@@ -459,15 +484,16 @@ public class Robot extends TimedRobot {
               //go backwards to tarmac
               // Components.BL.setPosition(0);
               // Components.BR.setPosition(0);
-              Autonomous.drive(-87);
-              //start flywheel
               Components.CANShooter1.set(ShootingPower);
               Components.CANShooter2.set(ShootingPower);
+              Autonomous.drive(-50);
+              //start flywheel
               break;
             case 2:
               System.out.println("case 2: Turning to Hub");
               //turn to angle with limelight
-              Autonomous.LimelightTurnToAligned();
+              // Autonomous.LimelightTurnToAligned();
+              AutoStep++;
               break;
             case 3:
               System.out.println("case 3: Shooting 2 balls");
@@ -495,7 +521,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    System.out.println("gyro Angle:"+ Components.gyro.getAngle());
+    System.out.println("gyro Angle: "+ Components.gyro.getAngle());
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
     double targetHeight = 2.6416; // meter, 104 inches

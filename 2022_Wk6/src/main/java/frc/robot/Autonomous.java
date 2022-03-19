@@ -15,7 +15,10 @@ public class Autonomous {
     static double Leftpower = 0.2;
     static double RIghtpower = 0.2;
     static double Divider = 1;
-    public static Timer timer = new Timer();
+    static double MaxVel = 0.6;
+    static double rampUpSpeed = 0.6;
+    static double rampUpTime = 1;
+    public static Timer Ramptimer = new Timer();
 
     public static void drive(double dist) {
         // power = Components.pid.calculate(Components.BL.getPosition(), dist);
@@ -50,33 +53,58 @@ public class Autonomous {
                 System.out.println("Done going backwards");
                 Components.BL.setPosition(0);
                 Components.BR.setPosition(0);
+                Autonomous.Ramptimer.reset();
                 Robot.AutoStep++;
             }
 
-        } else if (dist > 0) // fowards
+        } 
+        else if (dist > 0) //fowards
         {
             Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
             RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            if(timer.get()<1)
-            {
-
-            }
-            else{
+            // System.out.println("Left Speed: " + Leftpower+"right Speed: "+ RIghtpower);
+            
+            // if(Ramptimer.get()<rampUpTime)
+            // {
+            //     rampUpSpeed = MaxVel*(Ramptimer.get()/rampUpTime);
+            //     if (Leftpower > rampUpSpeed) {
+            //         Divider = Leftpower / rampUpSpeed;
+            //         // Leftpower = -0.4;
+            //         Leftpower = Leftpower / Divider;
+            //         RIghtpower = RIghtpower / Divider;
+            //     }
+            //     if (RIghtpower > rampUpSpeed) {
+            //         // RIghtpower = -0.4;
+            //         Divider = RIghtpower / rampUpSpeed;
+            //         // Leftpower = -0.4;
+            //         Leftpower = Leftpower / Divider;
+            //         RIghtpower = RIghtpower / Divider;
+            //     }
+            // // }
+            //     Components.CANBackLeft.set(Leftpower);
+            //     Components.CANBackRight.set(RIghtpower);
+            //     Components.CANFrontLeft.set(Leftpower);
+            //     Components.CANFrontRight.set(RIghtpower);
+            //     System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
+            //             + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+            // }
+            // else{
            
-            if (Leftpower > 0.6) {
-                Divider = Leftpower / 0.6;
+            if (Leftpower > MaxVel) {
+                Divider = Leftpower / MaxVel;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            if (RIghtpower > 0.6) {
+            if (RIghtpower > MaxVel) {
                 // RIghtpower = -0.4;
-                Divider = RIghtpower / 0.6;
+                Divider = RIghtpower / MaxVel;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-        }
+            // }
+        // }
             Components.CANBackLeft.set(Leftpower);
             Components.CANBackRight.set(RIghtpower);
             Components.CANFrontLeft.set(Leftpower);
@@ -91,24 +119,9 @@ public class Autonomous {
                 System.out.println("Done going fowards");
                 Components.BL.setPosition(0);
                 Components.BR.setPosition(0);
+                Autonomous.Ramptimer.reset();
                 Robot.AutoStep++;
             }
-            // }
-            // Components.CANBackLeft.set(-power);
-            // Components.CANBackRight.set(-power);
-            // Components.CANFrontLeft.set(-power);
-            // Components.CANFrontRight.set(-power);
-            // System.out.println("Going backwards" + Components.BL.getPosition());
-            if (Components.BL.getPosition() <= dist) {
-                Components.CANBackLeft.set(0);
-                Components.CANBackRight.set(0);
-                Components.CANFrontLeft.set(0);
-                Components.CANFrontRight.set(0);
-                System.out.println("Done going backwards");
-                Components.BL.setPosition(0);
-                Robot.AutoStep++;
-            }
-
         }
         // else if (dist > 0) // fowards
         // {
@@ -154,6 +167,7 @@ public class Autonomous {
                 Components.CANFrontLeft.set(0);
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
+                Autonomous.Ramptimer.reset();
                 Robot.AutoStep++;
             }
         } else if (!direction) { // counterclockwise
@@ -171,6 +185,7 @@ public class Autonomous {
                 Components.CANFrontLeft.set(0);
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
+                Autonomous.Ramptimer.reset();
                 Robot.AutoStep++;
             }
         }
@@ -191,6 +206,7 @@ public class Autonomous {
             // stops flywheel
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
+            Autonomous.Ramptimer.reset();
             Robot.AutoStep++;
         }
     }
@@ -263,6 +279,7 @@ public class Autonomous {
             }
             if (!(Robot.tx.getDouble(0.0) > 2 || Robot.tx.getDouble(0.0) < -2)) {
                 System.out.println("At tape");
+                Autonomous.Ramptimer.reset();
                 Robot.AutoStep++;
                 // Robot.SmartDashboard.getEntry("Ready to Shoot!");
             }

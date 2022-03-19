@@ -91,7 +91,7 @@ public class Components {
     //gyros
     public static final ADIS16448_IMU gyro = new ADIS16448_IMU();
     // public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
-    public static AnalogGyro driveGyro = new AnalogGyro(0);
+    // public static AnalogGyro driveGyro = new AnalogGyro(0);
 
     // pids
     public static PIDController LimelightPID = new PIDController(0.15, 0, 0);
