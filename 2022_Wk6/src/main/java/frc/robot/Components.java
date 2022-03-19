@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.SerialPort.StopBits;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj.Servo;
 
@@ -89,9 +92,10 @@ public class Components {
     // public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
 
     //gyros
-    public static final ADIS16448_IMU gyro = new ADIS16448_IMU();
+    // private SPI.Port m_spi_port = new SPI.Port();
+    public static final ADIS16448_IMU gyro = new ADIS16448_IMU(ADIS16448_IMU.IMUAxis.kX,SPI.Port.kMXP, ADIS16448_IMU.CalibrationTime._2s);
     // public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
-    public static AnalogGyro driveGyro = new AnalogGyro(0);
+    // public static AnalogGyro driveGyro = new AnalogGyro(0);
 
     // pids
     public static PIDController LimelightPID = new PIDController(0.15, 0, 0);

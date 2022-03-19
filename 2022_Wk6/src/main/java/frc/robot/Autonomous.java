@@ -15,6 +15,8 @@ public class Autonomous {
     static double Leftpower = 0.2;
     static double RIghtpower = 0.2;
     static double Divider = 1;
+    static double MaxVelocity = 0.6;
+    static double AccelorationTime = 1;
     public static Timer timer = new Timer();
 
     public static void drive(double dist) {
@@ -57,21 +59,21 @@ public class Autonomous {
         {
             Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
             RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            if(timer.get()<1)
+            if(timer.get()<AccelorationTime)
             {
 
             }
             else{
            
-            if (Leftpower > 0.6) {
-                Divider = Leftpower / 0.6;
+            if (Leftpower > MaxVelocity) {
+                Divider = Leftpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            if (RIghtpower > 0.6) {
+            if (RIghtpower > MaxVelocity) {
                 // RIghtpower = -0.4;
-                Divider = RIghtpower / 0.6;
+                Divider = RIghtpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
