@@ -165,6 +165,8 @@ public class Robot extends TimedRobot {
     Components.CANShooter2.set(0);
     Autonomous.Ramptimer.reset();
     Autonomous.Ramptimer.start();
+    Autonomous.waittimer.reset();
+    Autonomous.waittimer.start();
 
     //Pneumatic Things
     Components.intakePneumatic.set(Value.kReverse);
@@ -253,6 +255,7 @@ public class Robot extends TimedRobot {
           Components.BL.setPosition(0);
           Components.BR.setPosition(0);
           Autonomous.Ramptimer.reset();
+          Autonomous.Ramptimer.start();
           AutoStep++;
           break;
           case 1:
@@ -277,6 +280,7 @@ public class Robot extends TimedRobot {
           Components.BL.setPosition(0);
           Components.BR.setPosition(0);
           Autonomous.Ramptimer.reset();
+          Autonomous.Ramptimer.start();
           AutoStep++;
           break;
           case 1:
@@ -485,6 +489,8 @@ public class Robot extends TimedRobot {
               break;
               case 1:
               // AutoStep++;
+              Autonomous.Ramptimer.reset();
+              Autonomous.Ramptimer.start();
               Autonomous.puase(1.5);
               break;
             case 2:
