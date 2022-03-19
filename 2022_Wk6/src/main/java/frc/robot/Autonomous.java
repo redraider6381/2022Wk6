@@ -15,9 +15,8 @@ public class Autonomous {
     static double Leftpower = 0.2;
     static double RIghtpower = 0.2;
     static double Divider = 1;
-    static double MaxVel = 0.6;
-    static double rampUpSpeed = 0.6;
-    static double rampUpTime = 1;
+    static double MaxVelocity = 0.6;
+    static double AccelorationTime = 1;
     public static Timer Ramptimer = new Timer();
 
     public static void drive(double dist) {
@@ -62,48 +61,25 @@ public class Autonomous {
         {
             Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
             RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            // System.out.println("Left Speed: " + Leftpower+"right Speed: "+ RIghtpower);
-            
-            // if(Ramptimer.get()<rampUpTime)
+            // if(timer.get()<AccelorationTime)
             // {
-            //     rampUpSpeed = MaxVel*(Ramptimer.get()/rampUpTime);
-            //     if (Leftpower > rampUpSpeed) {
-            //         Divider = Leftpower / rampUpSpeed;
-            //         // Leftpower = -0.4;
-            //         Leftpower = Leftpower / Divider;
-            //         RIghtpower = RIghtpower / Divider;
-            //     }
-            //     if (RIghtpower > rampUpSpeed) {
-            //         // RIghtpower = -0.4;
-            //         Divider = RIghtpower / rampUpSpeed;
-            //         // Leftpower = -0.4;
-            //         Leftpower = Leftpower / Divider;
-            //         RIghtpower = RIghtpower / Divider;
-            //     }
-            // // }
-            //     Components.CANBackLeft.set(Leftpower);
-            //     Components.CANBackRight.set(RIghtpower);
-            //     Components.CANFrontLeft.set(Leftpower);
-            //     Components.CANFrontRight.set(RIghtpower);
-            //     System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
-            //             + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+
             // }
             // else{
            
-            if (Leftpower > MaxVel) {
-                Divider = Leftpower / MaxVel;
+            if (Leftpower > MaxVelocity) {
+                Divider = Leftpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            if (RIghtpower > MaxVel) {
+            if (RIghtpower > MaxVelocity) {
                 // RIghtpower = -0.4;
-                Divider = RIghtpower / MaxVel;
+                Divider = RIghtpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-            // }
         // }
             Components.CANBackLeft.set(Leftpower);
             Components.CANBackRight.set(RIghtpower);
