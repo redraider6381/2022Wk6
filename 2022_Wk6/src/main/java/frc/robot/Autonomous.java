@@ -59,11 +59,11 @@ public class Autonomous {
         {
             Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
             RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            if(timer.get()<AccelorationTime)
-            {
+            // if(timer.get()<AccelorationTime)
+            // {
 
-            }
-            else{
+            // }
+            // else{
            
             if (Leftpower > MaxVelocity) {
                 Divider = Leftpower / MaxVelocity;
@@ -78,7 +78,7 @@ public class Autonomous {
                 Leftpower = Leftpower / Divider;
                 RIghtpower = RIghtpower / Divider;
             }
-        }
+        // }
             Components.CANBackLeft.set(Leftpower);
             Components.CANBackRight.set(RIghtpower);
             Components.CANFrontLeft.set(Leftpower);
