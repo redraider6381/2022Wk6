@@ -102,5 +102,9 @@ public class Components {
     // public static PIDController TurnPID = new PIDController(0.01, 0, 0);
     public static PIDController TranslationalPID = new PIDController(0.0085, 0, 0);
     // public static ProfiledPIDController TranslationalPID = new ProfiledPIDController();
+    public static PIDController BLStrafingPID = new PIDController(0.2, 0, 0);
+    public static PIDController BRStrafingPID = new PIDController(0.2, 0, 0);
+    public static PIDController FLStrafingPID = new PIDController(0.2, 0, 0);
+    public static PIDController FRStrafingPID = new PIDController(0.2, 0, 0);
 
 }
