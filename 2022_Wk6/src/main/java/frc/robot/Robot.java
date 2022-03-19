@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 import edu.wpi.first.cscore.UsbCamera;
 
+// import com.analog.adis16448.frc.ADIS16448_IMU;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -158,7 +160,7 @@ public class Robot extends TimedRobot {
     Components.BR.setPosition(0);
 
     //Pneumatic Things
-    Components.intakePneumatic.set(Value.kForward);
+    Components.intakePneumatic.set(Value.kReverse);
     pneumaticsTimer.reset();
 
     Components.BL.setPositionConversionFactor((6*Math.PI)*(10/62));//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
@@ -493,6 +495,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    System.out.println("gyro Angle:"+ Components.gyro.getAngle());
+
     table = NetworkTableInstance.getDefault().getTable("limelight");
     double targetHeight = 2.6416; // meter, 104 inches
     tx = table.getEntry("tx");
@@ -649,11 +653,11 @@ public class Robot extends TimedRobot {
 
     if (Components.XBController2.getPOV() ==180){
       System.out.println("Should be in");
-      Components.intakePneumatic.set(Value.kReverse); //in
+      Components.intakePneumatic.set(Value.kForward); //in
     }
     if (Components.XBController2.getPOV() ==0){
       System.out.println("Should be out");
-      Components.intakePneumatic.set(Value.kForward); //out
+      Components.intakePneumatic.set(Value.kReverse); //out
     }
     table = NetworkTableInstance.getDefault().getTable("limelight");
     distance = 2.6416; // meter
@@ -663,7 +667,7 @@ public class Robot extends TimedRobot {
 
     if(validTarget()&& !Components.XBController.getAButton())
     {
-        System.out.println("Side Angle:"+tx.getDouble(0.0));
+        // System.out.println("Side Angle:"+tx.getDouble(0.0));
         // System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
     }
       else if (validTarget() && Components.XBController.getAButton()){

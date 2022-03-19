@@ -3,6 +3,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -87,8 +88,10 @@ public class Components {
 
     // public static Ultrasonic ultrasonic = new Ultrasonic(1,2);
 
-    //gyro
-    public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
+    //gyros
+    public static final ADIS16448_IMU gyro = new ADIS16448_IMU();
+    // public static AnalogGyro gyro = new AnalogGyro(0); // angle increases going clockwise
+    public static AnalogGyro driveGyro = new AnalogGyro(0);
 
     // pids
     public static PIDController LimelightPID = new PIDController(0.15, 0, 0);
