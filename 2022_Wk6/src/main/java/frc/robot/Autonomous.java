@@ -20,7 +20,7 @@ public class Autonomous {
     static double AccelorationTime = 1;
     public static Timer Ramptimer = new Timer();
     public static Timer waittimer = new Timer();
-    static Double direction = 1;
+    static double direction = 1;
 
     public static void drive(double dist) {
         // power = Components.pid.calculate(Components.BL.getPosition(), dist);
@@ -90,7 +90,7 @@ public class Autonomous {
                 Leftpower = Leftpower / Divider;
                 Rightpower = Rightpower / Divider;
             }
-            if (RIghtpower > MaxVelocity) {
+            if (Rightpower > MaxVelocity) {
                 // RIghtpower = -0.4;
                 Divider = Rightpower / MaxVelocity;
                 // Leftpower = -0.4;
@@ -121,6 +121,8 @@ public class Autonomous {
                 Autonomous.waittimer.reset();
                 Autonomous.waittimer.start();
                 Robot.AutoStep++;
+            }
+        }
 
 
         // if (dist < 0) { // backwards
