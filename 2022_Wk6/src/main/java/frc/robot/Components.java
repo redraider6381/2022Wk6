@@ -43,8 +43,8 @@ public class Components {
     public static XboxController XBController = new XboxController(0);
     public static DoubleSolenoid intakePneumatic = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     // public static Compressor compressor = new Compressor(0,PneumaticsModuleType.REVPH);
-    public static CANSparkMax Indexer1    = new CANSparkMax(5, MotorType.kBrushless);
-    public static CANSparkMax Indexer2   = new CANSparkMax(13, MotorType.kBrushless);
+    public static CANSparkMax IndexerRight    = new CANSparkMax(5, MotorType.kBrushless);
+    public static CANSparkMax IndexerLeft   = new CANSparkMax(13, MotorType.kBrushless);
     public static XboxController XBController2 = new XboxController(1);
     public static CANSparkMax intakeMotor = new CANSparkMax(7, MotorType.kBrushless);
 
@@ -100,7 +100,7 @@ public class Components {
     // pids
     public static PIDController LimelightPID = new PIDController(0.15, 0, 0);
     // public static PIDController TurnPID = new PIDController(0.01, 0, 0);
-    public static PIDController TranslationalPID = new PIDController(0.0085, 0, 0);
+    public static PIDController TranslationalPID = new PIDController(0.015, 0, 0.003);
     // public static ProfiledPIDController TranslationalPID = new ProfiledPIDController();
     public static PIDController BLStrafingPID = new PIDController(0.2, 0, 0);
     public static PIDController BRStrafingPID = new PIDController(0.2, 0, 0);

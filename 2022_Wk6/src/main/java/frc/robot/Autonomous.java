@@ -13,79 +13,121 @@ import frc.robot.Mecanum;
 public class Autonomous {
 
     static double Leftpower = 0.2;
-    static double RIghtpower = 0.2;
+    static double Rightpower = 0.2;
     static double Divider = 1;
-    static double MaxVelocity = 0.6;
+    static double MaxVelocity = 0.2;
+    static double AxcelleratingVelocity = 0.2;
     static double AccelorationTime = 1;
-    public static Timer timer = new Timer();
+    public static Timer Ramptimer = new Timer();
+    public static Timer waittimer = new Timer();
+    static double direction = 1;
+    static double Conversion = 1;//(30/31)*Math.PI;
 
-    public static void drive(double dist) {
-        // power = Components.pid.calculate(Components.BL.getPosition(), dist);
-        if (dist < 0) { // backwards
-            Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
-            RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            // RIghtpower = Leftpower = 0.25;
-            if (Leftpower < -0.4) {
-                Divider = Leftpower / -0.4;
-                // Leftpower = -0.4;
-                Leftpower = Leftpower / Divider;
-                RIghtpower = RIghtpower / Divider;
-            }
-            if (RIghtpower < -0.4) {
-                // RIghtpower = -0.4;
-                Divider = RIghtpower / -0.4;
-                // Leftpower = -0.4;
-                Leftpower = Leftpower / Divider;
-                RIghtpower = RIghtpower / Divider;
-            }
-            Components.CANBackLeft.set(-Leftpower);
-            Components.CANBackRight.set(-RIghtpower);
-            Components.CANFrontLeft.set(-Leftpower);
-            Components.CANFrontRight.set(-RIghtpower);
-            System.out.println("Going backwards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
-                    + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
-            if ((Components.BL.getPosition() <= dist) && (Components.BR.getPosition() <= dist)) {
-                Components.CANBackLeft.set(0);
-                Components.CANBackRight.set(0);
-                Components.CANFrontLeft.set(0);
-                Components.CANFrontRight.set(0);
-                System.out.println("Done going backwards");
-                Components.BL.setPosition(0);
-                Components.BR.setPosition(0);
-                Robot.AutoStep++;
-            }
-
-        } else if (dist > 0) // fowards
+    public static void drive(double dist,Boolean Direction) {
+        if(!Direction)
         {
-            Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
-            RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
-            // if(timer.get()<AccelorationTime)
-            // {
+            direction = -1;
+        }
+        else
+        {
+            direction = 1;   
+        }
+        
+        // power = Components.pid.calculate(Components.BL.getPosition(), dist);
+        // if (dist < 0) { // backwards
+        //     direction = -1;
+        //     // Components.CANFrontLeft.setInverted(false);
+        //     // Components.CANBackLeft.setInverted(false);
+        //     // Components.CANFrontRight.setInverted(true);
+        //     // Components.CANBackRight.setInverted(true);
 
-            // }
-            // else{
+        // }
+        // else
+        // {
+        //     // Components.CANFrontLeft.setInverted(true);
+        //     // Components.CANBackLeft.setInverted(true);
+        //     // Components.CANFrontRight.setInverted(false);
+        //     // Components.CANBackRight.setInverted(false);
+        //     direction = 1;
+        // }
+
+            //PID calculates the value 
+            Leftpower = Components.TranslationalPID.calculate(direction*Components.BL.getPosition()*Conversion, dist);
+            Rightpower = Components.TranslationalPID.calculate(direction*Components.BR.getPosition()*Conversion, dist);
+
+            //Keeping the ratio from the PID it ramps up:
+            if(Ramptimer.get()<AccelorationTime)
+            {
+                System.out.println("Time Accelerating: "+ Ramptimer.get());
+                AxcelleratingVelocity = MaxVelocity*Ramptimer.get()/AccelorationTime;
+                if (Leftpower > AxcelleratingVelocity) {
+                    Divider = Leftpower / AxcelleratingVelocity;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower / Divider;
+                    Rightpower = Rightpower / Divider;
+                }
+                if (Rightpower > AxcelleratingVelocity) {
+                    // Rightpower = -0.4;
+                    Divider = Rightpower / AxcelleratingVelocity;
+                    // Leftpower = -0.4;
+                    Leftpower = Leftpower / Divider;
+                    Rightpower = Rightpower / Divider;
+                }
+
+                //Powers:
+                Components.CANBackLeft.set(Leftpower*direction);
+                Components.CANBackRight.set(Rightpower*direction);
+                Components.CANFrontLeft.set(Leftpower*direction);
+                Components.CANFrontRight.set(Rightpower*direction);
+                System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition()*direction + "Left Speed: " + Leftpower*direction
+                                        + "RightPos: " + Components.BR.getPosition()*direction + "RightSpeed " + Rightpower*direction);
+                
+                //Checks if done:
+                if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
+                    Components.CANBackLeft.set(0);
+                    Components.CANBackRight.set(0);
+                    Components.CANFrontLeft.set(0);
+                    Components.CANFrontRight.set(0);
+                    System.out.println("Done going fowards");
+                    Components.BL.setPosition(0);
+                    Components.BR.setPosition(0);
+                    Autonomous.Ramptimer.reset();
+                    Autonomous.Ramptimer.start();
+                    Autonomous.waittimer.reset();
+                    Autonomous.waittimer.start();
+                    Robot.AutoStep++;
+                }
+            }
+
+            //Done Ramping up:
+            else{
            
+            //Keeping the ratio from the PID it stays below a max velocity:
             if (Leftpower > MaxVelocity) {
                 Divider = Leftpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
-                RIghtpower = RIghtpower / Divider;
+                Rightpower = Rightpower / Divider;
             }
-            if (RIghtpower > MaxVelocity) {
+            if (Rightpower > MaxVelocity) {
                 // RIghtpower = -0.4;
-                Divider = RIghtpower / MaxVelocity;
+                Divider = Rightpower / MaxVelocity;
                 // Leftpower = -0.4;
                 Leftpower = Leftpower / Divider;
-                RIghtpower = RIghtpower / Divider;
+                Rightpower = Rightpower / Divider;
             }
-        // }
-            Components.CANBackLeft.set(Leftpower);
-            Components.CANBackRight.set(RIghtpower);
-            Components.CANFrontLeft.set(Leftpower);
-            Components.CANFrontRight.set(RIghtpower);
-            System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
-                    + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
-            if (Components.BL.getPosition() >= dist && (Components.BR.getPosition() >= dist)) {
+
+            //Powers:
+            Components.CANBackLeft.set(Leftpower*direction);
+            Components.CANBackRight.set(Rightpower*direction);
+            Components.CANFrontLeft.set(Leftpower*direction);
+            Components.CANFrontRight.set(Rightpower*direction);
+            System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition()*Conversion + "Left Speed: " + Leftpower*direction
+                    + "RightPos: " + Components.BR.getPosition()*Conversion + "RightSpeed " + Rightpower*direction);
+
+
+            //Checks if Done:
+            if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
                 Components.CANBackLeft.set(0);
                 Components.CANBackRight.set(0);
                 Components.CANFrontLeft.set(0);
@@ -93,46 +135,174 @@ public class Autonomous {
                 System.out.println("Done going fowards");
                 Components.BL.setPosition(0);
                 Components.BR.setPosition(0);
+                Autonomous.Ramptimer.reset();
+                Autonomous.Ramptimer.start();
+                Autonomous.waittimer.reset();
+                Autonomous.waittimer.start();
                 Robot.AutoStep++;
             }
-            // }
-            // Components.CANBackLeft.set(-power);
-            // Components.CANBackRight.set(-power);
-            // Components.CANFrontLeft.set(-power);
-            // Components.CANFrontRight.set(-power);
-            // System.out.println("Going backwards" + Components.BL.getPosition());
-            if (Components.BL.getPosition() <= dist) {
-                Components.CANBackLeft.set(0);
-                Components.CANBackRight.set(0);
-                Components.CANFrontLeft.set(0);
-                Components.CANFrontRight.set(0);
-                System.out.println("Done going backwards");
-                Components.BL.setPosition(0);
-                Robot.AutoStep++;
-            }
-
         }
-        // else if (dist > 0) // fowards
+
+
+        // if (dist < 0) { // backwards
+        //     Leftpower = -Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
+        //     RIghtpower = -Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+
+        //     if(Ramptimer.get()<AccelorationTime)
+        //     {
+        //         System.out.println("Time Accelerating: "+ Ramptimer.get());
+        //         AxcelleratingVelocity = MaxVelocity*Ramptimer.get()/AccelorationTime;
+        //         if (Leftpower < -AxcelleratingVelocity) {
+        //             Divider = Leftpower /-AxcelleratingVelocity;
+        //             // Leftpower = -0.4;
+        //             Leftpower = Leftpower / Divider;
+        //             RIghtpower = RIghtpower / Divider;
+        //         }
+        //         if (RIghtpower < -AxcelleratingVelocity) {
+        //             // RIghtpower = -0.4;
+        //             Divider = RIghtpower / -AxcelleratingVelocity;
+        //             // Leftpower = -0.4;
+        //             Leftpower = Leftpower / Divider;
+        //             RIghtpower = RIghtpower / Divider;
+        //         }
+        //     // }
+        //         Components.CANBackLeft.set(-Leftpower);
+        //         Components.CANBackRight.set(-RIghtpower);
+        //         Components.CANFrontLeft.set(-Leftpower);
+        //         Components.CANFrontRight.set(-RIghtpower);
+        //         System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
+        //                 + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+        //         if (Components.BL.getPosition() <= dist && (Components.BR.getPosition() <= dist)) {
+        //             Components.CANBackLeft.set(0);
+        //             Components.CANBackRight.set(0);
+        //             Components.CANFrontLeft.set(0);
+        //             Components.CANFrontRight.set(0);
+        //             System.out.println("Done going fowards");
+        //             Components.BL.setPosition(0);
+        //             Components.BR.setPosition(0);
+        //             Autonomous.Ramptimer.reset();
+        //             Autonomous.Ramptimer.start();
+        //             Autonomous.waittimer.reset();
+        //             Autonomous.waittimer.start();
+        //             Robot.AutoStep++;
+        //         }
+        //     }
+        //     else{
+        //     // RIghtpower = Leftpower = 0.25;
+        //     if (Leftpower < -MaxVelocity) {
+        //         Divider = Leftpower / -MaxVelocity;
+        //         // Leftpower = -0.4;
+        //         Leftpower = Leftpower / Divider;
+        //         RIghtpower = RIghtpower / Divider;
+        //     }
+        //     if (RIghtpower < -MaxVelocity) {
+        //         // RIghtpower = -0.4;
+        //         Divider = RIghtpower / -MaxVelocity;
+        //         // Leftpower = -0.4;
+        //         Leftpower = Leftpower / Divider;
+        //         RIghtpower = RIghtpower / Divider;
+        //     }
+        //     Components.CANBackLeft.set(Leftpower);
+        //     Components.CANBackRight.set(RIghtpower);
+        //     Components.CANFrontLeft.set(Leftpower);
+        //     Components.CANFrontRight.set(RIghtpower);
+        //     System.out.println("Going backwards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
+        //             + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+        //     if ((Components.BL.getPosition() <= dist) && (Components.BR.getPosition() <= dist)) {
+        //         Components.CANBackLeft.set(0);
+        //         Components.CANBackRight.set(0);
+        //         Components.CANFrontLeft.set(0);
+        //         Components.CANFrontRight.set(0);
+        //         System.out.println("Done going backwards");
+        //         Components.BL.setPosition(0);
+        //         Components.BR.setPosition(0);
+        //         Autonomous.Ramptimer.reset();
+        //         Autonomous.Ramptimer.start();
+        //         Autonomous.waittimer.reset();
+        //         Autonomous.waittimer.start();
+        //         Robot.AutoStep++;
+        //     }
+        // }
+        // } 
+        // else if (dist > 0) //fowards
         // {
-        // // power = Components.LimelightPID.calculate(Components.BL.getPosition(),
-        // dist);
-        // // if(power>0.5)
-        // // {
-        // // power = 0.5;
+        //     Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
+        //     RIghtpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+        //     if(Ramptimer.get()<AccelorationTime)
+        //     {
+        //         System.out.println("Time Accelerating: "+ Ramptimer.get());
+        //         AxcelleratingVelocity = MaxVelocity*Ramptimer.get()/AccelorationTime;
+        //         if (Leftpower > AxcelleratingVelocity) {
+        //             Divider = Leftpower / AxcelleratingVelocity;
+        //             // Leftpower = -0.4;
+        //             Leftpower = Leftpower / Divider;
+        //             RIghtpower = RIghtpower / Divider;
+        //         }
+        //         if (RIghtpower > AxcelleratingVelocity) {
+        //             // RIghtpower = -0.4;
+        //             Divider = RIghtpower / AxcelleratingVelocity;
+        //             // Leftpower = -0.4;
+        //             Leftpower = Leftpower / Divider;
+        //             RIghtpower = RIghtpower / Divider;
+        //         }
+        //     // }
+        //         Components.CANBackLeft.set(Leftpower);
+        //         Components.CANBackRight.set(RIghtpower);
+        //         Components.CANFrontLeft.set(Leftpower);
+        //         Components.CANFrontRight.set(RIghtpower);
+        //         System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
+        //                 + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+        //         if (Components.BL.getPosition() >= dist && (Components.BR.getPosition() >= dist)) {
+        //             Components.CANBackLeft.set(0);
+        //             Components.CANBackRight.set(0);
+        //             Components.CANFrontLeft.set(0);
+        //             Components.CANFrontRight.set(0);
+        //             System.out.println("Done going fowards");
+        //             Components.BL.setPosition(0);
+        //             Components.BR.setPosition(0);
+        //             Autonomous.Ramptimer.reset();
+        //             Autonomous.Ramptimer.start();
+        //             Autonomous.waittimer.reset();
+        //             Autonomous.waittimer.start();
+        //             Robot.AutoStep++;
+        //         }
+        //     }
+        //     else{
+           
+        //     if (Leftpower > MaxVelocity) {
+        //         Divider = Leftpower / MaxVelocity;
+        //         // Leftpower = -0.4;
+        //         Leftpower = Leftpower / Divider;
+        //         RIghtpower = RIghtpower / Divider;
+        //     }
+        //     if (RIghtpower > MaxVelocity) {
+        //         // RIghtpower = -0.4;
+        //         Divider = RIghtpower / MaxVelocity;
+        //         // Leftpower = -0.4;
+        //         Leftpower = Leftpower / Divider;
+        //         RIghtpower = RIghtpower / Divider;
+        //     }
         // // }
-        // // Components.CANBackLeft.set(power);
-        // // Components.CANBackRight.set(power);
-        // // Components.CANFrontLeft.set(power);
-        // // Components.CANFrontRight.set(power);
-        // System.out.println("Going fowards" + Components.BL.getPosition());
-        // if (Components.BL.getPosition() >= dist) {
-        // Components.CANBackLeft.set(0);
-        // Components.CANBackRight.set(0);
-        // Components.CANFrontLeft.set(0);
-        // Components.CANFrontRight.set(0);
-        // System.out.println("Done going fowards");
-        // Components.BL.setPosition(0);
-        // Robot.AutoStep++;
+        //     Components.CANBackLeft.set(Leftpower);
+        //     Components.CANBackRight.set(RIghtpower);
+        //     Components.CANFrontLeft.set(Leftpower);
+        //     Components.CANFrontRight.set(RIghtpower);
+        //     System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
+        //             + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + RIghtpower);
+        //     if (Components.BL.getPosition() >= dist && (Components.BR.getPosition() >= dist)) {
+        //         Components.CANBackLeft.set(0);
+        //         Components.CANBackRight.set(0);
+        //         Components.CANFrontLeft.set(0);
+        //         Components.CANFrontRight.set(0);
+        //         System.out.println("Done going fowards");
+        //         Components.BL.setPosition(0);
+        //         Components.BR.setPosition(0);
+        //         Autonomous.Ramptimer.reset();
+        //         Autonomous.Ramptimer.start();
+        //         Autonomous.waittimer.reset();
+        //         Autonomous.waittimer.start();
+        //         Robot.AutoStep++;
+        //     }
         // }
         // }
     }
@@ -156,6 +326,10 @@ public class Autonomous {
                 Components.CANFrontLeft.set(0);
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
+                Autonomous.Ramptimer.reset();
+                Autonomous.Ramptimer.start();
+                Autonomous.waittimer.reset();
+                Autonomous.waittimer.start();
                 Robot.AutoStep++;
             }
         } else if (!direction) { // counterclockwise
@@ -173,6 +347,10 @@ public class Autonomous {
                 Components.CANFrontLeft.set(0);
                 Components.CANFrontRight.set(0);
                 Components.BL.setPosition(0);
+                Autonomous.Ramptimer.reset();
+                Autonomous.Ramptimer.start();
+                Autonomous.waittimer.reset();
+                Autonomous.waittimer.start();
                 Robot.AutoStep++;
             }
         }
@@ -183,16 +361,20 @@ public class Autonomous {
     public static void uptake(double ballNumber) {
         // Possibly recalc shooting speed from distance
         Components.Uptake.set(Robot.uptakeSpeed);
-        Components.Indexer1.set(Robot.indexerPower);
-        Components.Indexer2.set(Robot.indexerPower);
-        if (uptakeTimer.get() > 1 * ballNumber) {
+        Components.IndexerRight.set(-Robot.indexerPower);
+        Components.IndexerLeft.set(-Robot.indexerPower);
+        if (uptakeTimer.get() > 2 * ballNumber) {
             // stops Intake and Indexer
             Components.Uptake.set(0);
-            Components.Indexer1.set(0);
-            Components.Indexer2.set(0);
+            Components.IndexerRight.set(0);
+            Components.IndexerLeft.set(0);
             // stops flywheel
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
+            Autonomous.Ramptimer.reset();
+            Autonomous.Ramptimer.start();
+            Autonomous.waittimer.reset();
+            Autonomous.waittimer.start();
             Robot.AutoStep++;
         }
     }
@@ -265,6 +447,10 @@ public class Autonomous {
             }
             if (!(Robot.tx.getDouble(0.0) > 2 || Robot.tx.getDouble(0.0) < -2)) {
                 System.out.println("At tape");
+                Autonomous.Ramptimer.reset();
+                Autonomous.Ramptimer.start();
+                Autonomous.waittimer.reset();
+                Autonomous.waittimer.start();
                 Robot.AutoStep++;
                 // Robot.SmartDashboard.getEntry("Ready to Shoot!");
             }
@@ -299,6 +485,26 @@ public class Autonomous {
     // double br = forward + turning - strafing;
     // double fl = forward - turning + strafing;
     // double fr = forward + turning - strafing;
+
+    public static void setPneumatics() {
+        System.out.println("Pnuematics waiting for: "+Robot.pneumaticsTimer.get());
+        if(Robot.pneumaticsTimer.get()>0.5)
+        {
+            Components.intakePneumatic.set(Value.kOff);
+        }
+    }
+
+    public static void puase(double time) {
+        System.out.println("Waiting for: "+Robot.waitTimer.get());
+        if(Robot.waitTimer.get()>time)
+        {
+            Autonomous.Ramptimer.reset();
+            Autonomous.Ramptimer.start();
+            Autonomous.waittimer.reset();
+            Autonomous.waittimer.start();
+            Robot.AutoStep++;
+        }
+    }
 
     // double blspeed = Components.pid.calculate(Components.BL.getPosition(), bl);
     // double brspeed = Components.pid.calculate(Components.BR.getPosition(), br);
