@@ -672,7 +672,7 @@ public class Robot extends TimedRobot {
     // Shooter Code:
     if (Components.XBController2.getRightTriggerAxis()>0.05)
     {
-      ShootingPower = 0.45-(ty.getDouble(0.0)/100); //Some sort of function for this angle.
+      // ShootingPower = 0.45-(ty.getDouble(0.0)/100); //Some sort of function for this angle.
       System.out.println("Shooting!!!");
       Components.CANShooter1.set(ShootingPower);
       Components.CANShooter2.set(ShootingPower);
