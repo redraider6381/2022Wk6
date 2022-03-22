@@ -47,6 +47,9 @@ public class Robot extends TimedRobot {
   //Webcam:
   UsbCamera camera1;
 
+  //Important
+  public static double ShootingPower = 0.4;
+
   //Limelight
   // private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
   // int limeStateNum = limeTable.getEntry("ledMode").getNumber(0).intValue();
@@ -82,7 +85,6 @@ public class Robot extends TimedRobot {
   // Teleop Variables
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
-  public static double ShootingPower = 0.4;
   public static double uptakeSpeed = -0.2;
 
   static NetworkTableEntry tx;
@@ -654,11 +656,7 @@ public class Robot extends TimedRobot {
   
     else if (Components.XBController2.getLeftY() > 0.05) {
       // Backwards intake
-      // Components.CANShooter1.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
-      // Components.CANShooter2.set(-Components.happyStick.getRawAxis(1)*ShootingPower);
       Components.intakeMotor.set(-1);
-      // Components.Indexer2.set(-indexerPower);
-      // Components.Indexer1.set(-indexerPower);
         // Backwards indexer
         Components.intakePneumatic.set(Value.kOff);
         Components.IndexerLeft.set(-indexerPower);
@@ -674,10 +672,10 @@ public class Robot extends TimedRobot {
     // Shooter Code:
     if (Components.XBController2.getRightTriggerAxis()>0.05)
     {
+      ShootingPower = 0.45-(ty.getDouble(0.0)/100); //Some sort of function for this angle.
       System.out.println("Shooting!!!");
       Components.CANShooter1.set(ShootingPower);
       Components.CANShooter2.set(ShootingPower);
-      // Components.Uptake.set(uptakeSpeed);
     } else {
       Components.CANShooter1.set(0);
       Components.CANShooter2.set(0);
