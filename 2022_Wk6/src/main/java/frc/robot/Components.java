@@ -43,8 +43,8 @@ public class Components {
     public static XboxController XBController = new XboxController(0);
     public static DoubleSolenoid intakePneumatic = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     // public static Compressor compressor = new Compressor(0,PneumaticsModuleType.REVPH);
-    public static CANSparkMax Indexer1    = new CANSparkMax(5, MotorType.kBrushless);
-    public static CANSparkMax Indexer2   = new CANSparkMax(13, MotorType.kBrushless);
+    public static CANSparkMax IndexerRight    = new CANSparkMax(5, MotorType.kBrushless);
+    public static CANSparkMax IndexerLeft   = new CANSparkMax(13, MotorType.kBrushless);
     public static XboxController XBController2 = new XboxController(1);
     public static CANSparkMax intakeMotor = new CANSparkMax(7, MotorType.kBrushless);
 

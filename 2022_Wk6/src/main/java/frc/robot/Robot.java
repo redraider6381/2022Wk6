@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
   public static double ShootingPower = 0.4;
-  public static double uptakeSpeed = -0.5;
+  public static double uptakeSpeed = -0.2;
 
   static NetworkTableEntry tx;
   NetworkTableEntry ty;
@@ -123,6 +123,7 @@ public class Robot extends TimedRobot {
   public double turnamount2 = 0;
   public double intaketime2 = 5;
   public double flwheeltime2 = 3;
+  static double Conversion = 23/68; //((30/31)*Math.PI);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -153,8 +154,9 @@ public class Robot extends TimedRobot {
     // limitSwitch = new DigitalInput(1);
     Components.CANFrontLeft.setInverted(true);
     Components.CANBackLeft.setInverted(true);
+
     Components.CANShooter2.setInverted(true);
-    Components.Indexer2.setInverted(true);
+    Components.IndexerLeft.setInverted(true);
     Components.CANBackLeft.set(0);
     Components.CANBackRight.set(0);
     Components.CANFrontLeft.set(0);
@@ -163,17 +165,18 @@ public class Robot extends TimedRobot {
     Components.BR.setPosition(0);
     Components.CANShooter1.set(0);
     Components.CANShooter2.set(0);
+    Components.Uptake.set(0);
     Autonomous.Ramptimer.reset();
     Autonomous.Ramptimer.start();
     Autonomous.waittimer.reset();
     Autonomous.waittimer.start();
 
     //Pneumatic Things
-    Components.intakePneumatic.set(Value.kReverse);
+    
     pneumaticsTimer.reset();
 
-    Components.BL.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
-    Components.BR.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    // Components.BL.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
+    // Components.BR.setPositionConversionFactor((30/31)*Math.PI);//Circumfrance is 6 Pi, Gear ratio is:10/62 //Important (maybe should be just pi)
     // Components.BL.setPositionConversionFactor(Math.PI); //Important (maybe should be just pi)
 
     //might be important for gyro
@@ -228,6 +231,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    Components.CANShooter1.set(0);
+    Components.CANShooter2.set(0);
+    Components.Uptake.set(0);
     AutoStep = 0;
     m_autoSelected = SmartDashboard.getString("Auto Selector", k5BallAuto);
     m_autoSelected = m_chooser.getSelected();
@@ -238,7 +244,7 @@ public class Robot extends TimedRobot {
     // Autonomous.Ramptimer.start();
     timer.reset();
     timer.start();
-
+    Components.intakePneumatic.set(Value.kReverse);
   }
 
   /** This function is called periodically during autonomous. */
@@ -256,11 +262,12 @@ public class Robot extends TimedRobot {
           Components.BR.setPosition(0);
           Autonomous.Ramptimer.reset();
           Autonomous.Ramptimer.start();
+        
           AutoStep++;
           break;
           case 1:
           System.out.println("case 1: Moving 48 in forward");
-            Autonomous.drive(48);
+            Autonomous.drive(16.2353,true);
             break;
           case 2:
           // System.out.println("case 2: Stopping");
@@ -285,7 +292,7 @@ public class Robot extends TimedRobot {
           break;
           case 1:
           System.out.println("case 1: Moving 48 in backwards");
-            Autonomous.drive(-48);
+            Autonomous.drive(48*Conversion,false);
             break;
           case 2:
           // System.out.println("case 2: Stopping");
@@ -331,14 +338,14 @@ public class Robot extends TimedRobot {
             System.out.println("Starting 5 ball Auto");
             System.out.println("case 0: Picking up Ball 1");
             //run intake and indexer
-            Components.Indexer1.set(indexerPower);
-            Components.Indexer2.set(indexerPower);
+            Components.IndexerRight.set(indexerPower);
+            Components.IndexerLeft.set(indexerPower);
             Components.intakeMotor.set(1);
             Components.intakePneumatic.set(Value.kOff); //use a timer to wait 0.5 seconds before doing this
             // Autonomous.setPneumatics();
 
             //go forward to ball 1 and adds to autosteps
-            Autonomous.drive(47);
+            // Autonomous.drive(47);
             break;
           case 1:
             Components.intakePneumatic.set(Value.kOff);
@@ -350,7 +357,7 @@ public class Robot extends TimedRobot {
             //go backwards to tarmac
             // Components.BL.setPosition(0);
             // Components.BR.setPosition(0);
-            Autonomous.drive(-87);
+            // Autonomous.drive(-87);
             //start flywheel
             Components.CANShooter1.set(ShootingPower);
             Components.CANShooter2.set(ShootingPower);
@@ -374,12 +381,12 @@ public class Robot extends TimedRobot {
           case 5:
             System.out.println("case 5: Moving to ball 2");
             //run intake and indexer and go forward to ball 2
-            Components.Indexer1.set(indexerPower);
-            Components.Indexer2.set(indexerPower);
+            Components.IndexerRight.set(indexerPower);
+            Components.IndexerLeft.set(indexerPower);
             Components.intakeMotor.set(1);
             Components.BL.setPosition(0);
             Components.BR.setPosition(0);
-            Autonomous.drive(108);
+            // Autonomous.drive(108);
             break;
           case 6:
             System.out.println("case 6: Starting flywheel and returning to tarmac");
@@ -392,7 +399,7 @@ public class Robot extends TimedRobot {
             //go backwards to tarmac
             // Components.BL.setPosition(0);
             // Components.BR.setPosition(0);
-            Autonomous.drive(-108);
+            // Autonomous.drive(-108);
             break;
           case 7:
             System.out.println("case 7: Turning towards hub");
@@ -415,14 +422,14 @@ public class Robot extends TimedRobot {
           case 10:
             System.out.println("case 10: Going to pick up balls 3 and 4");
             //run intake and indexer
-            Components.Indexer1.set(indexerPower);
-            Components.Indexer2.set(indexerPower);
+            Components.IndexerRight.set(indexerPower);
+            Components.IndexerLeft.set(indexerPower);
             Components.intakeMotor.set(1);
             //turn to ball 3 
             //drive to ball 3 - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
             // Components.BL.setPosition(0);
             // Components.BR.setPosition(0);
-            Autonomous.drive(256);
+            // Autonomous.drive(256);
             break;
           case 11:
             //pause to pick up ball 4
@@ -434,8 +441,8 @@ public class Robot extends TimedRobot {
           case 12:
             System.out.println("case 12: Starting flywheel and returning to tarmac");
             //stop intake and indexer
-            Components.Indexer1.set(0);
-            Components.Indexer2.set(0);
+            Components.IndexerRight.set(0);
+            Components.IndexerLeft.set(0);
             Components.intakeMotor.set(0);
             //start flywheel
             Components.CANShooter1.set(ShootingPower);
@@ -443,7 +450,7 @@ public class Robot extends TimedRobot {
             //turn and drive to tarmac - MAYBE CHANGE TO SPLINE IN FUTURE, OR ADD TURN
             // Components.BL.setPosition(0);
             // Components.BR.setPosition(0);
-            Autonomous.drive(-256);
+            // Autonomous.drive(-256);
             break;
           case 13:      
             System.out.println("case 13: Turning to Hub");
@@ -462,7 +469,7 @@ public class Robot extends TimedRobot {
           case 15:
             System.out.println("case 15: Moving off tarmac");
             //go forward til off tarmac
-            Autonomous.drive(80);
+            // Autonomous.drive(80);
             break;
         }
         break;
@@ -475,17 +482,17 @@ public class Robot extends TimedRobot {
             case 0:
               System.out.println("Starting 1 ball Auto");
               System.out.println("case 0: Picking up Ball 1");
-              Autonomous.setPneumatics();
+              // Autonomous.setPneumatics();
               //run intake and indexer
-              Components.Indexer1.set(-indexerPower);
-              Components.Indexer2.set(-indexerPower);
+              Components.IndexerLeft.set(-indexerPower);
+              Components.IndexerRight.set(-indexerPower);
               Components.intakeMotor.set(-1);
               //go forward to ball 1 and adds to autosteps
               // Components.BL.setPosition(0);
               // Components.BR.setPosition(0);
               waitTimer.reset();
               waitTimer.start();
-              Autonomous.drive(48);
+              Autonomous.drive(16.2353,true);
               break;
               case 1:
               // AutoStep++;
@@ -505,7 +512,9 @@ public class Robot extends TimedRobot {
               Components.CANShooter1.set(ShootingPower);
               Components.CANShooter2.set(ShootingPower);Components.CANShooter1.set(ShootingPower);
               Components.CANShooter2.set(ShootingPower);
-              Autonomous.drive(-68);
+              Autonomous.drive(23,false);
+              Components.intakePneumatic.set(Value.kForward);
+              Components.intakeMotor.set(0);
               //start flywheel
               break;
             case 3:
@@ -513,12 +522,19 @@ public class Robot extends TimedRobot {
               //turn to angle with limelight
               // Autonomous.LimelightTurnToAligned();
               Autonomous.uptakeTimer.reset();
+              Autonomous.uptakeTimer.start();
               AutoStep++;
               break;
             case 4:
               System.out.println("case 3: Shooting 2 balls");
               //Run uptake, wait, stop uptake
               Autonomous.uptake(2);
+              break;
+              case 5:
+              System.out.println("case 5: Driving off Tarmac");
+              Autonomous.drive(25.706,true);
+              //Run uptake, wait, stop uptake
+              // Autonomous.uptake(2);
               break;
           }
             break;
@@ -631,8 +647,8 @@ public class Robot extends TimedRobot {
       // fowards intake and indexer
       Components.intakePneumatic.set(Value.kOff);
       Components.intakeMotor.set(1);
-      Components.Indexer2.set(indexerPower);
-      Components.Indexer1.set(indexerPower);
+      Components.IndexerLeft.set(indexerPower);
+      Components.IndexerRight.set(indexerPower);
 
     } 
   
@@ -645,14 +661,14 @@ public class Robot extends TimedRobot {
       // Components.Indexer1.set(-indexerPower);
         // Backwards indexer
         Components.intakePneumatic.set(Value.kOff);
-        Components.Indexer2.set(-indexerPower);
-        Components.Indexer1.set(-indexerPower);
+        Components.IndexerLeft.set(-indexerPower);
+        Components.IndexerRight.set(-indexerPower);
       } 
       else {
         Components.intakeMotor.set(0);
         // otherwise indexer stays how it is
-        Components.Indexer2.set(0);
-        Components.Indexer1.set(0);
+        Components.IndexerLeft.set(0);
+        Components.IndexerRight.set(0);
       }
 
     // Shooter Code:
@@ -680,8 +696,8 @@ public class Robot extends TimedRobot {
     {
       // Components.intakeMotor.set(-1);
       Components.Uptake.set(uptakeSpeed);
-      Components.Indexer2.set(-indexerPower);
-      Components.Indexer1.set(-indexerPower);
+      Components.IndexerLeft.set(-indexerPower);
+      Components.IndexerRight.set(-indexerPower);
     } else {
       Components.Uptake.set(0);
     }

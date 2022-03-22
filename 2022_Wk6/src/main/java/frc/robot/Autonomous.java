@@ -21,20 +21,39 @@ public class Autonomous {
     public static Timer Ramptimer = new Timer();
     public static Timer waittimer = new Timer();
     static double direction = 1;
+    static double Conversion = 1;//(30/31)*Math.PI;
 
-    public static void drive(double dist) {
-        // power = Components.pid.calculate(Components.BL.getPosition(), dist);
-        if (dist < 0) { // backwards
+    public static void drive(double dist,Boolean Direction) {
+        if(!Direction)
+        {
             direction = -1;
         }
         else
         {
-            direction = 1;
+            direction = 1;   
         }
+        
+        // power = Components.pid.calculate(Components.BL.getPosition(), dist);
+        // if (dist < 0) { // backwards
+        //     direction = -1;
+        //     // Components.CANFrontLeft.setInverted(false);
+        //     // Components.CANBackLeft.setInverted(false);
+        //     // Components.CANFrontRight.setInverted(true);
+        //     // Components.CANBackRight.setInverted(true);
+
+        // }
+        // else
+        // {
+        //     // Components.CANFrontLeft.setInverted(true);
+        //     // Components.CANBackLeft.setInverted(true);
+        //     // Components.CANFrontRight.setInverted(false);
+        //     // Components.CANBackRight.setInverted(false);
+        //     direction = 1;
+        // }
 
             //PID calculates the value 
-            Leftpower = Components.TranslationalPID.calculate(Components.BL.getPosition(), dist);
-            Rightpower = Components.TranslationalPID.calculate(Components.BR.getPosition(), dist);
+            Leftpower = Components.TranslationalPID.calculate(direction*Components.BL.getPosition()*Conversion, dist);
+            Rightpower = Components.TranslationalPID.calculate(direction*Components.BR.getPosition()*Conversion, dist);
 
             //Keeping the ratio from the PID it ramps up:
             if(Ramptimer.get()<AccelorationTime)
@@ -60,11 +79,11 @@ public class Autonomous {
                 Components.CANBackRight.set(Rightpower*direction);
                 Components.CANFrontLeft.set(Leftpower*direction);
                 Components.CANFrontRight.set(Rightpower*direction);
-                System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
-                        + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + Rightpower);
+                System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition()*direction + "Left Speed: " + Leftpower*direction
+                                        + "RightPos: " + Components.BR.getPosition()*direction + "RightSpeed " + Rightpower*direction);
                 
                 //Checks if done:
-                if (Components.BL.getPosition()*direction >= dist*direction && (Components.BR.getPosition()*direction >= dist*direction)) {
+                if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
@@ -103,12 +122,12 @@ public class Autonomous {
             Components.CANBackRight.set(Rightpower*direction);
             Components.CANFrontLeft.set(Leftpower*direction);
             Components.CANFrontRight.set(Rightpower*direction);
-            System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition() + "Left Speed: " + Leftpower
-                    + "RightPos: " + Components.BR.getPosition() + "RightSpeed " + Rightpower);
+            System.out.println("Going fowards: Left Pos:" + Components.BL.getPosition()*Conversion + "Left Speed: " + Leftpower*direction
+                    + "RightPos: " + Components.BR.getPosition()*Conversion + "RightSpeed " + Rightpower*direction);
 
 
             //Checks if Done:
-            if (Components.BL.getPosition()*direction >= dist*direction && (Components.BR.getPosition()*direction >= dist*direction)) {
+            if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
                 Components.CANBackLeft.set(0);
                 Components.CANBackRight.set(0);
                 Components.CANFrontLeft.set(0);
@@ -342,13 +361,13 @@ public class Autonomous {
     public static void uptake(double ballNumber) {
         // Possibly recalc shooting speed from distance
         Components.Uptake.set(Robot.uptakeSpeed);
-        Components.Indexer1.set(Robot.indexerPower);
-        Components.Indexer2.set(Robot.indexerPower);
-        if (uptakeTimer.get() > 1 * ballNumber) {
+        Components.IndexerRight.set(-Robot.indexerPower);
+        Components.IndexerLeft.set(-Robot.indexerPower);
+        if (uptakeTimer.get() > 2 * ballNumber) {
             // stops Intake and Indexer
             Components.Uptake.set(0);
-            Components.Indexer1.set(0);
-            Components.Indexer2.set(0);
+            Components.IndexerRight.set(0);
+            Components.IndexerLeft.set(0);
             // stops flywheel
             Components.CANShooter1.set(0);
             Components.CANShooter2.set(0);
