@@ -669,6 +669,12 @@ public class Robot extends TimedRobot {
         Components.IndexerRight.set(0);
       }
 
+
+
+
+
+
+
     // Shooter Code:
     if (Components.XBController2.getRightTriggerAxis()>0.05)
     {
@@ -681,6 +687,13 @@ public class Robot extends TimedRobot {
       Components.CANShooter2.set(0);
       // Components.Uptake.set(0);
     }
+
+
+
+
+
+
+    
 
     if (L && R) {
       drivePower = 1;
