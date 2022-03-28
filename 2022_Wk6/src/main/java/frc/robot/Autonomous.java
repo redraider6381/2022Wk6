@@ -12,6 +12,9 @@ import frc.robot.Mecanum;
 
 public class Autonomous {
 
+
+    static double MarginOfError = 2.75; 
+
     static double Leftpower = 0.2;
     static double Rightpower = 0.2;
     static double Divider = 1;
@@ -83,7 +86,7 @@ public class Autonomous {
                                         + "RightPos: " + Components.BR.getPosition()*direction + "RightSpeed " + Rightpower*direction);
                 
                 //Checks if done:
-                if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
+                if (Components.BL.getPosition()*direction*Conversion >= dist-MarginOfError && (Components.BR.getPosition()*direction*Conversion >= dist-MarginOfError)) {
                     Components.CANBackLeft.set(0);
                     Components.CANBackRight.set(0);
                     Components.CANFrontLeft.set(0);
@@ -127,7 +130,7 @@ public class Autonomous {
 
 
             //Checks if Done:
-            if (Components.BL.getPosition()*direction*Conversion >= dist-2 && (Components.BR.getPosition()*direction*Conversion >= dist-2)) {
+            if (Components.BL.getPosition()*direction*Conversion >= dist-MarginOfError && (Components.BR.getPosition()*direction*Conversion >= dist-MarginOfError)) {
                 Components.CANBackLeft.set(0);
                 Components.CANBackRight.set(0);
                 Components.CANFrontLeft.set(0);
@@ -360,7 +363,7 @@ public class Autonomous {
 
     public static void uptake(double ballNumber) {
         // Possibly recalc shooting speed from distance
-        Components.Uptake.set(Robot.uptakeSpeed);
+        Components.Uptake.set(-0.15);
         Components.IndexerRight.set(-Robot.indexerPower);
         Components.IndexerLeft.set(-Robot.indexerPower);
         if (uptakeTimer.get() > 2 * ballNumber) {

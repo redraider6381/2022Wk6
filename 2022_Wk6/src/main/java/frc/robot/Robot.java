@@ -44,11 +44,12 @@ import edu.wpi.first.cscore.UsbCamera;
  */
 
 public class Robot extends TimedRobot {
+  
   //Webcam:
   UsbCamera camera1;
 
   //Important
-  public static double ShootingPower = 0.4;
+  public static double ShootingPower = 0.355;
 
   //Limelight
   // private NetworkTable limeTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
   // Teleop Variables
   public static double drivePower = 0.25;
   public static double indexerPower = 0.33;
-  public static double uptakeSpeed = -0.2;
+  public static double uptakeSpeed = -0.5;
 
   static NetworkTableEntry tx;
   NetworkTableEntry ty;
@@ -108,7 +109,7 @@ public class Robot extends TimedRobot {
   public double driveSpeed = 0.25;
   public double turnSpeed = 0.25;
   public double FlywheelSpeed = 0.75;
-  public double IntakeSpeed = 0.75;
+  // public double IntakeSpeed = 0.75;
   public double distance = 40;
   // turns to the right
   public double turnamount = 0;
@@ -119,7 +120,7 @@ public class Robot extends TimedRobot {
   public double driveSpeed2 = 0.125;
   public double turnSpeed2 = 0.125;
   public double FlywheelSpeed2 = 0.375;
-  public double IntakeSpeed2 = 0.375;
+  // public double IntakeSpeed2 = 0.375;
   public double distance2 = 40;
   // turns to the right
   public double turnamount2 = 0;
@@ -132,8 +133,12 @@ public class Robot extends TimedRobot {
    * for any
    * initialization code.
    */
+  // SmartDashboard.putNumber("RPM1: ", 0);
+  //   SmartDashboard.putNumber("RPM2: ", 0);
   @Override
   public void robotInit() {
+    SmartDashboard.putNumber("RPM1: ", 0);
+    SmartDashboard.putNumber("RPM2: ", 0);
     // Components.compressor.enableDigital();
     //Webcam:
     camera1 = CameraServer.startAutomaticCapture(0);
@@ -146,11 +151,11 @@ public class Robot extends TimedRobot {
     Components.CANFrontRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
-    m_chooser.addOption("5BallAuto", k5BallAuto);
+    // m_chooser.addOption("5BallAuto", k5BallAuto);
     m_chooser.addOption("1BallAuto", k1BallAuto);
     m_chooser.addOption("48InchesAuto", k48InchesAuto);
-    m_chooser.addOption("-48InchesAuto", k48InchesAutoBackwards);
-    m_chooser.addOption("Turn90Auto", kTurn90Auto);
+    // m_chooser.addOption("-48InchesAuto", k48InchesAutoBackwards);
+    // m_chooser.addOption("Turn90Auto", kTurn90Auto);
     SmartDashboard.putData("Auto choices", m_chooser);
     
     // limitSwitch = new DigitalInput(1);
@@ -558,6 +563,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    SmartDashboard.putNumber("RPM1: ", Components.flywheelEncoder1.getVelocity());
+    SmartDashboard.putNumber("RPM2: ", Components.flywheelEncoder2.getVelocity());
+
     // System.out.println("gyro Angle: "+ Components.gyro.getAngle());
 
     table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -630,13 +638,13 @@ public class Robot extends TimedRobot {
       // Components.CANBackRight.set(SpeedToClimb);
       setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, -SpeedToClimb, rightXAxis, rightYAxis));
     }
-      else if(Components.XBController.getYButton()) //As it straffes to the right, turns clockwise aka turns to thr right, as it strafes left turns left
-      {
-        Components.CANFrontLeft.set(drivePower*(leftXAxis + leftXAxis*TurnSensitivity));
-        Components.CANFrontRight.set(drivePower*(-leftXAxis - leftXAxis*TurnSensitivity));
-        Components.CANBackLeft.set(drivePower*(-leftXAxis   + leftXAxis*TurnSensitivity));
-        Components.CANBackRight.set(drivePower*(leftXAxis - leftXAxis*TurnSensitivity));
-      }
+      // else if(Components.XBController.getYButton()) //As it straffes to the right, turns clockwise aka turns to thr right, as it strafes left turns left
+      // {
+      //   Components.CANFrontLeft.set(drivePower*(leftXAxis + leftXAxis*TurnSensitivity));
+      //   Components.CANFrontRight.set(drivePower*(-leftXAxis - leftXAxis*TurnSensitivity));
+      //   Components.CANBackLeft.set(drivePower*(-leftXAxis   + leftXAxis*TurnSensitivity));
+      //   Components.CANBackRight.set(drivePower*(leftXAxis - leftXAxis*TurnSensitivity));
+      // }
     else{
       setDriveForMecanum(Mecanum.joystickToMotion(leftXAxis, leftYAxis, rightXAxis, rightYAxis));
     }
@@ -644,7 +652,7 @@ public class Robot extends TimedRobot {
     boolean L = Components.XBController.getLeftBumper();
     boolean R = Components.XBController.getRightBumper();
 
-    // Shooter Code:
+    // Intake Code:
     if (Components.XBController2.getLeftY() < -0.05) {
       // fowards intake and indexer
       Components.intakePneumatic.set(Value.kOff);
@@ -673,13 +681,23 @@ public class Robot extends TimedRobot {
 
 
 
-
+      if (L && R && !(Components.XBController2.getRightTriggerAxis()>0.05)) {
+        drivePower = 0.65;
+      } else if (L || R) {
+        drivePower = 0.5;
+      } else {
+        drivePower = 0.25;
+      }
 
     // Shooter Code:
     if (Components.XBController2.getRightTriggerAxis()>0.05)
     {
       // ShootingPower = 0.45-(ty.getDouble(0.0)/100); //Some sort of function for this angle.
       System.out.println("Shooting!!!");
+      if (drivePower>0.5)
+      {
+        drivePower = 0.5;
+      }
       Components.CANShooter1.set(ShootingPower);
       Components.CANShooter2.set(ShootingPower);
     } else {
@@ -695,13 +713,7 @@ public class Robot extends TimedRobot {
 
     
 
-    if (L && R) {
-      drivePower = 1;
-    } else if (L || R) {
-      drivePower = 0.5;
-    } else {
-      drivePower = 0.25;
-    }
+    
 
     if (Components.XBController2.getLeftTriggerAxis()>0.05) 
     {
@@ -716,7 +728,7 @@ public class Robot extends TimedRobot {
     // {
     // Component.intakeMotor.set(0);
     // }
-    double speed = -0.2;
+    // double speed = -0.2;
 
     if (Components.XBController2.getPOV() ==90 ||Components.XBController2.getPOV() ==270){
       System.out.println("Should be off");
@@ -742,9 +754,10 @@ public class Robot extends TimedRobot {
         // System.out.println("Side Angle:"+tx.getDouble(0.0));
         System.out.println("Distance:"+(74/Math.tan(Math.toRadians(ty.getDouble(0.0)+60.25))-6.125)+"Up Angle:"+ty.getDouble(0.0)+"Side Angle:"+tx.getDouble(0.0));
     }
-      else if (validTarget() && Components.XBController.getAButton()){
+      else if (validTarget() && Components.XBController.getAButton())
+      {
         // Autonomous.LimelightTurnToAligned();
-        if (Robot.validTarget() && Components.XBController.getAButton()){
+        // if (Robot.validTarget() && Components.XBController.getAButton()){
           // move the robot
           
           double MarginOfError = 1;
@@ -791,7 +804,7 @@ public class Robot extends TimedRobot {
           System.out.println("turning, Angle ="+Robot.tx.getDouble(0.0)+"speed"+limeLightTurnSpeed);
   
           // SmartDashboard.putData(Se);
-          }
+          // }
           }
           if(!(Robot.tx.getDouble(0.0)>MarginOfError ||Robot.tx.getDouble(0.0)<-MarginOfError))
           {
