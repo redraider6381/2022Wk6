@@ -56,7 +56,9 @@ public class Components {
     
     //Flywheels:
     public static CANSparkMax CANShooter1 = new CANSparkMax(11, MotorType.kBrushless);
+    public static RelativeEncoder flywheelEncoder1 = CANShooter1.getEncoder();
     public static CANSparkMax CANShooter2 = new CANSparkMax(2, MotorType.kBrushless);
+    public static RelativeEncoder flywheelEncoder2 = CANShooter2.getEncoder();
 
 
  //   // Creates UsbCamera and MjpegServer [1] and connects them
