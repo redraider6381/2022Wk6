@@ -16,7 +16,16 @@ public class Autonomous {
     static double MarginOfError = 2.75; 
 
     static double Leftpower = 0.2;
+<<<<<<< Updated upstream
     static double Rightpower = 0.2;
+=======
+    static double RIghtpower = 0.2;
+    static double BackLeftpower = 0.2;
+    static double BackRightpower = 0.2;
+    static double FrontLeftpower = 0.2;
+    static double FrontRightpower = 0.2;
+    static boolean strafing = false;
+>>>>>>> Stashed changes
     static double Divider = 1;
     static double MaxVelocity = 0.2;
     static double AxcelleratingVelocity = 0.2;
@@ -26,6 +35,7 @@ public class Autonomous {
     static double direction = 1;
     static double Conversion = 1;//(30/31)*Math.PI;
 
+<<<<<<< Updated upstream
     public static void drive(double dist,Boolean Direction) {
         if(!Direction)
         {
@@ -36,6 +46,21 @@ public class Autonomous {
             direction = 1;   
         }
         
+=======
+    public static void drive(double dist, double xDist) {
+        //Strafing
+        if(strafing = true){
+            BackLeftpower = -Components.BLStrafingPID.calculate(Components.BL.getPosition(), dist);
+            BackRightpower = Components.BRStrafingPID.calculate(Components.BR.getPosition(), dist);
+            FrontLeftpower = Components.FLStrafingPID.calculate(Components.BR.getPosition(), dist);
+            FrontRightpower = -Components.FRStrafingPID.calculate(Components.BR.getPosition(), dist);
+
+            Components.CANBackLeft.set(BackLeftpower);
+            Components.CANBackRight.set(BackRightpower);
+            Components.CANFrontLeft.set(FrontLeftpower);
+            Components.CANFrontRight.set(FrontRightpower);
+        }
+>>>>>>> Stashed changes
         // power = Components.pid.calculate(Components.BL.getPosition(), dist);
         // if (dist < 0) { // backwards
         //     direction = -1;
